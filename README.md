@@ -177,14 +177,14 @@ Explain the step-by-step approach.
 
 | Week / Month | Task Planned          | Status                            |
 | ------------ | --------------------- | --------------------------------- |
-| Week 1       | Problem finalization  | Pending / In Progress / Completed |
-| Week 2       | Literature survey     |                                   |
-| Week 3       | Requirement analysis  |                                   |
-| Week 4       | System design         |                                   |
-| Week 5       | Prototype development |                                   |
-| Week 6       | Testing               |                                   |
-| Week 7       | Documentation         |                                   |
-| Week 8       | Paper writing         |                                   |
+| Week 1       | Problem finalization  |           Completed               |
+| Week 2       | Literature survey     |           Completed               |
+| Week 3       | Requirement analysis  |           Completed               |
+| Week 4       | System design         |           in progress             |
+| Week 5       | Prototype development |           in progress             |
+| Week 6       | Testing               |           pending                 |
+| Week 7       | Documentation         |           in progress             |
+| Week 8       | Paper writing         |           pending                 |
 
 ---
 
