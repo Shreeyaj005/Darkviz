@@ -1,9 +1,6 @@
-````markdown
-# BE Capstone Project
+# Darkviz 
 
-## Project Title
-
-**Write the full title of your project here**
+**Autonomous Omni-Directional Robotic System for Dark-Store Inventory Handling and Order Fulfillment**
 
 ---
 
@@ -11,16 +8,16 @@
 
 | Sr. No. | Name of Student | Roll No. | Branch | Email ID |
 |---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
+| 1 | Shreeeya Jadhav | 45  | Automation and Robotics | 2023.shreeya.jadhav@ves.ac.in |
+| 2 | Ayush Likhar | 11 | Automation and Robotics | 2023.ayush.likhar@ves.ac.in |
+| 3 | Yash Gupta | 44 | Automation and Robotics | 2023.yash.gupta@ves.ac.in |
+| 4 | Vedant Chavan | 40 | Automation and Robotics | 2023.vedant.chavan@ves.ac.in |
 
 ---
 
 ## Guide Details
 
-**Project Guide:**  
+**Project Guide: Amudha Senthilkumar**  
 **Department:** Automation and Robotics  
 **Institute:** VESIT, Mumbai  
 
@@ -28,77 +25,86 @@
 
 ## Problem Statement
 
-Write a clear problem statement here.
-
-Example:
-
-> The aim of this project is to design and develop a system that solves the problem of __________ by using __________ technology.
+> The aim of this project is to develop an autonomous robotic solution for inventory retrieval in quick-commerce dark stores by integrating omni-directional mobility, SLAM based navigation, and a tray based product retrieval mechanism to reduce human intervention, minimize picking errors, and improve the speed and consistency of order preparation.
 
 ---
 
 ## Abstract
 
-Write a short summary of the project in 150–250 words.
+### Abstract
 
-The abstract should include:
+Quick-commerce dark stores depend on rapid and accurate inventory retrieval to fulfill customer orders within short delivery times. Manual product picking can lead to delays, human errors, and increased operational effort. **DarkViz** is proposed as an autonomous robot to automate inventory retrieval and improve order preparation in dark stores.
 
-- Background of the problem
-- Proposed solution
-- Technology used
-- Expected outcome
-- Application area
+The robot uses an **omni-directional drive system** and **SLAM (Simultaneous Localization and Mapping)** for indoor mapping, localization, and autonomous navigation. It is equipped with a **tray-based retrieval mechanism** to collect products from designated storage locations and transport them to the order-fulfillment area. Product locations can be assigned through an existing inventory management system.
+
+The expected outcome is a functional prototype capable of accurately navigating the dark-store environment and retrieving products with minimal human intervention. The system can serve as a foundation for future **fully automated dark-store operations**, with applications in quick-commerce, warehouse automation, inventory management, and logistics.
+
 
 ---
 
 ## Objectives
 
-1. To study the existing problem and available solutions.
-2. To design a suitable hardware/software/system architecture.
-3. To implement the proposed solution.
-4. To test and validate the system.
-5. To document and publish the project work.
+1. To study existing inventory retrieval and automation challenges in quick-commerce dark stores and analyze available robotic solutions.
+2. To design an omni-directional mobile robot with a suitable hardware, software, navigation, and tray-based product retrieval architecture.
+3. To implement SLAM-based mapping and autonomous navigation along with the tray mechanism for automated product retrieval.
+4. To test and validate the robot’s navigation, localization, product retrieval, and overall system performance in a simulated and physical dark-store     environment.
+5. To document and present the design, implementation, results, and future scope of the DarkViz robotic system.
 
 ---
 
 ## Scope of the Project
 
-Mention what the project will cover.
-
-Example:
-
-- Design and development of prototype
-- Hardware implementation
-- Software/mobile/web interface
-- Data collection and testing
-- Performance analysis
+* Development of the omni-directional robot prototype with tray based retrieval mechanism.
+* Simulation of the robot and dark-store environment.
+* Implementation of SLAM for mapping and localization.
+* Development of autonomous navigation and robot control.
+* Hardware-software integration and real-world testing.
+* Performance testing of navigation and product retrieval.
+* Foundation for a fully automated dark-store system.
 
 ---
 
 ## Existing System
 
-Describe the currently available system or method.
+Quick-commerce dark stores currently use inventory management software combined with manual human picking. While software manages inventory, order allocation, and picking routes, workers physically locate, retrieve, and transport products.
 
-Mention its limitations:
-
-- High cost
-- Low accuracy
-- Manual process
-- Lack of automation
-- Poor scalability
-- Limited accessibility
+Limitations
+- High dependence on manual labor.
+- Increased risk of picking and fulfillment errors.
+- Longer processing time during peak demand.
+- Limited automation of inventory retrieval.
+- Higher operational and labor costs.
+- Poor scalability with increasing order volumes.
+- Inconsistent performance due to human fatigue and errors.
 
 ---
 
 ## Proposed System
 
-Describe your proposed solution.
+**DarkViz** is an autonomous omni-directional mobile robot designed to automate product retrieval in quick-commerce dark stores.
 
-Include:
+### How It Works
 
-- Main idea
-- How it works
-- Major components
-- Expected benefits
+The robot uses **LiDAR-based SLAM** to map the dark store and determine its position. Once a product location is assigned by the inventory system, the robot autonomously navigates to the required shelf using **path planning and omni-directional motion**. A **motorized tray mechanism** then extends to retrieve the product and carries it to the designated order-fulfillment area.
+
+### Major Components
+
+* Omni-directional drive system
+* LiDAR and SLAM
+* ROS 2-based navigation and control
+* Motor drivers and DC motors
+* Automated tray retrieval mechanism
+* Onboard processing unit
+* Dark-store simulation environment
+
+### Expected Benefits
+
+* Reduced manual intervention
+* Faster and more accurate product retrieval
+* Reduced picking errors
+* Consistent operation
+* Foundation for a fully automated dark-store system
+
 
 ---
 
@@ -118,35 +124,37 @@ Briefly explain the architecture.
 
 | Sr. No. | Component | Specification | Quantity | Purpose |
 | ------- | --------- | ------------- | -------- | ------- |
-| 1       |           |               |          |         |
-| 2       |           |               |          |         |
-| 3       |           |               |          |         |
-| 4       |           |               |          |         |
-
+| 1       |       TB6612FNG motor driver module     |   maximum voltage of 15VDC             1.2A per channel (or up to 3.2A for a short, single pulse)            |      2    |    To control the speed and direction of the robot’s DC motors by receiving control signals from the microcontroller and supplying the required current to each motor.     |
+| 2       |     Pro-range Johnson motor      |      High Torque DC Motor 12V 600RPM             encoder compatible        |     3     |    To provide the required torque and rotational motion for the robot’s omni-directional wheels, enabling controlled movement in different directions.     |
+| 3       |    Omni Wheels      |       Body material: Aluminium          Diameter: 60 mm.  Load capacity: 3 kg   Number of rollers: 10    Roller material: Rubber  Number of plates: 6 |    3      |    To provide omni-directional movement, allowing the robot to move forward, backward, sideways, and rotate in place for precise navigation within the dark store.     |
+| 4       |     ESP WROOM 32 MCU Module Version: 1.1 microcontroller      |        generic WiFi-BT-BLE MCU module       |      1    |    To serve as the robot’s main microcontroller, processing control commands and managing motor drivers, sensors, and communication for autonomous robot operation.     |
+| 5       |     raspi 4 model B      |        Broadcom BCM2711 Quad-core 64-bit Cortex-A72 @ 1.8 GHz, 4 GB LPDDR4 RAM, Wi-Fi, Bluetooth 5.0, Gigabit Ethernet, 40-pin GPIO       |      1    |    Main onboard computer for running ROS 2, SLAM, navigation algorithms, sensor processing, and high-level robot control     |
+| 6       |     Battery      |       8000mah       |      1    |    To provide the primary power supply for the robot’s motors, microcontrollers, sensors, and other electronic components.     |
 ---
 
 ## Software Requirements
 
 | Sr. No. | Software / Tool | Version | Purpose |
 | ------- | --------------- | ------- | ------- |
-| 1       |                 |         |         |
-| 2       |                 |         |         |
-| 3       |                 |         |         |
+| 1       |        Gazebo/Ignition         |   Gazebo Fortress      |     Simulation of the robot, sensors, environment, and navigation    |
+| 2       |        RViz2        |    ROS 2 Humble     |    Visualization of SLAM maps, robot pose, LiDAR data, TF, and navigation     |
+| 3       |        Ubuntu         |    22.04 LTS     |    Operating system for running ROS 2, Gazebo, RViz2, and robot software     |
 
 ---
 
 ## Technologies Used
 
-Mention technologies used in the project.
-
-Example:
-
-* Embedded C / Python / JavaScript
-* Arduino / STM32 / ESP32 / Raspberry Pi
-* ROS / MATLAB / Simulink
-* Machine Learning / Computer Vision
-* IoT / Cloud / Mobile App
-* PCB Design / CAD Design
+- ROS 2 Humble – Robot software framework
+- Python / C++ – Algorithm development and robot control
+- SLAM – Indoor mapping and localization
+- Nav2 – Autonomous navigation and path planning
+- Gazebo – Robot and environment simulation
+- RViz2 – Visualization and monitoring
+- Raspberry Pi 4B – Main processing unit
+- ESP32 – Motor and hardware control
+- LiDAR – Environment sensing and mapping
+- Autodesk Fusion – 3D CAD design of the robot and tray mechanism
+- Embedded Systems – Motor drivers, motors, sensors, and actuator integration
 
 ---
 
