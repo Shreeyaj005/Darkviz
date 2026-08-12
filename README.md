@@ -14,6 +14,8 @@
 | 4 | Vedant Chavan | 40 | Automation and Robotics | 2023.vedant.chavan@ves.ac.in |
 
 ---
+## Proposal 
+https://youtu.be/RFOlutvGod4
 
 ## Guide Details
 
