@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="kiwi_robot">
 
-  <!-- ==================== PROPERTIES (2x scale) ==================== -->
   <xacro:property name="chassis_radius" value="0.30"/>
   <xacro:property name="chassis_height" value="0.12"/>
   <xacro:property name="chassis_mass" value="9.0"/>
@@ -18,7 +17,7 @@
   <xacro:property name="lidar_height" value="0.08"/>
   <xacro:property name="lidar_mass" value="0.6"/>
 
-  <!-- ==================== INERTIA MACROS ==================== -->
+  <!-- inertia macros -->
   <xacro:macro name="cylinder_inertia" params="m r h">
     <inertial>
       <mass value="${m}"/>
@@ -37,7 +36,7 @@
     </inertial>
   </xacro:macro>
 
-  <!-- ==================== MATERIALS ==================== -->
+  <!--  materials  -->
   <material name="dark_gray">
     <color rgba="0.2 0.2 0.2 1.0"/>
   </material>
@@ -54,7 +53,7 @@
     <color rgba="0.1 0.3 0.8 1.0"/>
   </material>
 
-  <!-- ==================== BASE FOOTPRINT ==================== -->
+  <!-- base footprint -->
   <link name="base_footprint"/>
 
   <joint name="base_footprint_joint" type="fixed">
@@ -63,7 +62,7 @@
     <origin xyz="0 0 ${wheel_radius + chassis_height/2.0}" rpy="0 0 0"/>
   </joint>
 
-  <!-- ==================== BASE LINK (CHASSIS) ==================== -->
+  <!--  vhassis -->
   <link name="base_link">
     <xacro:cylinder_inertia m="${chassis_mass}" r="${chassis_radius}" h="${chassis_height}"/>
     <visual>
@@ -94,7 +93,7 @@
     <origin xyz="0 0 ${chassis_height/2.0 + 0.004}" rpy="0 0 0"/>
   </joint>
 
-  <!-- ==================== WHEEL MACRO ==================== -->
+  <!-- wheel macro -->
   <xacro:macro name="kiwi_wheel" params="name angle_deg">
     <!-- Compute angle in radians -->
     <xacro:property name="angle_rad" value="${radians(angle_deg)}"/>
@@ -134,11 +133,7 @@
     <joint name="${name}_wheel_joint" type="continuous">
       <parent link="base_link"/>
       <child link="${name}_wheel"/>
-      <!-- Position stays at angle_rad (unchanged). The +pi/2 on yaw ONLY
-           rotates the wheel's spin axis, shifting its rolling direction
-           from radial (toward/away from center; produces zero torque)
-           to tangential (around the center; required for turning and
-           holonomic strafing). -->
+      
       <origin xyz="${wheel_offset * cos(angle_rad)} ${wheel_offset * sin(angle_rad)} ${-chassis_height/2.0}"
               rpy="${pi/2.0} 0 ${angle_rad + pi/2.0}"/>
       <axis xyz="0 0 1"/>
@@ -146,12 +141,12 @@
     </joint>
   </xacro:macro>
 
-  <!-- Instantiate 3 wheels at 120 degree intervals -->
+  <!-- instantiate 3 wheels at 120 degree intervals -->
   <xacro:kiwi_wheel name="front"      angle_deg="90"/>
   <xacro:kiwi_wheel name="rear_left"  angle_deg="210"/>
   <xacro:kiwi_wheel name="rear_right" angle_deg="-30"/>
 
-  <!-- ==================== LIDAR SENSOR ==================== -->
+  <!-- lidar -->
   <link name="lidar_link">
     <xacro:cylinder_inertia m="${lidar_mass}" r="${lidar_radius}" h="${lidar_height}"/>
     <visual>
@@ -172,7 +167,7 @@
     <origin xyz="0 0 ${chassis_height/2.0 + 0.006 + lidar_height/2.0}" rpy="0 0 0"/>
   </joint>
 
-  <!-- ==================== GAZEBO MATERIAL COLORS ==================== -->
+  <!-- gazebo material-->
   <gazebo reference="base_link">
     <material>Gazebo/DarkGrey</material>
   </gazebo>
@@ -188,10 +183,7 @@
   <gazebo reference="rear_right_hub">
     <material>Gazebo/Grey</material>
   </gazebo>
-  <!-- All three wheels are now actively driven (omni drive) -->
-  <!-- Using uniform friction across all wheels; simple cylinder collision
-       can't model true omni-roller anisotropic friction, so this is an
-       approximation good enough for sim/demo purposes. -->
+
   <gazebo reference="front_wheel">
     <material>Gazebo/Black</material>
     <mu1>1.0</mu1>
@@ -211,7 +203,7 @@
     <material>Gazebo/Blue</material>
   </gazebo>
 
-  <!-- ==================== GAZEBO PLUGINS ==================== -->
+  <!-- plugins -->
   <gazebo>
     <plugin filename="gz-sim-joint-state-publisher-system"
             name="gz::sim::systems::JointStatePublisher">
@@ -221,8 +213,7 @@
     </plugin>
   </gazebo>
 
-  <!-- Ground-truth odometry: independent of how the wheels are actuated,
-       so switching drive schemes never breaks odom/TF for SLAM. -->
+ 
   <gazebo>
     <plugin filename="gz-sim-odometry-publisher-system"
             name="gz::sim::systems::OdometryPublisher">
@@ -235,9 +226,7 @@
     </plugin>
   </gazebo>
 
-  <!-- Per-wheel velocity controllers (replaces DiffDrive).
-       Each wheel is commanded independently by omni_drive_node.py,
-       which converts cmd_vel (vx, vy, wz) into these 3 wheel speeds. -->
+
   <gazebo>
     <plugin filename="gz-sim-joint-controller-system"
             name="gz::sim::systems::JointController">

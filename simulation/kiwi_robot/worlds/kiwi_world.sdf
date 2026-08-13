@@ -2,7 +2,7 @@
 <sdf version="1.8">
   <world name="kiwi_world">
 
-    <!-- ==================== PHYSICS ==================== -->
+    <!--- physics -->
     <gravity>0 0 -9.81</gravity>
     <physics name="default_physics" type="ode">
       <max_step_size>0.001</max_step_size>
@@ -16,21 +16,21 @@
       </ode>
     </physics>
 
-    <!-- ==================== PLUGINS ==================== -->
+    <!-- plugins  -->
     <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
     <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
     <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
     <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors"/>
     <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact"/>
 
-    <!-- ==================== SCENE ==================== -->
+    <!-- scene  -->
     <scene>
       <ambient>0.4 0.4 0.4 1</ambient>
       <background>0.2 0.2 0.3 1</background>
     </scene>
 
-    <!-- ==================== LIGHTING ==================== -->
-    <!-- Overhead warehouse lights -->
+    <!-- lighting  -->
+    <!-- overhead warehouse ligting -->
     <light type="directional" name="warehouse_light_main">
       <cast_shadows>true</cast_shadows>
       <pose>0 0 12 0 0 0</pose>
@@ -63,7 +63,7 @@
       </attenuation>
     </light>
 
-    <!-- ==================== GROUND PLANE ==================== -->
+    <!-- ground plane -->
     <model name="ground_plane">
       <static>true</static>
       <link name="link">
@@ -98,7 +98,7 @@
       </link>
     </model>
 
-    <!-- ==================== WAREHOUSE FLOOR ==================== -->
+    <!--  floor  -->
     <model name="warehouse_floor">
       <static>true</static>
       <pose>0 0 0.001 0 0 0</pose>
@@ -115,8 +115,8 @@
       </link>
     </model>
 
-    <!-- ==================== WAREHOUSE WALLS ==================== -->
-    <!-- North wall -->
+    <!-- walls -->
+    <!-- norht wall -->
     <model name="wall_north">
       <static>true</static>
       <pose>0 8 2.5 0 0 0</pose>
@@ -204,8 +204,8 @@
       </link>
     </model>
 
-    <!-- ==================== SHELVING RACK ROW A (left side) ==================== -->
-    <!-- Rack A1 -->
+    <!--  shelfing rack row (left side) -->
+    <!-- rack A1 -->
     <model name="rack_a1">
       <static>true</static>
       <pose>-7 -4 0 0 0 0</pose>
@@ -369,8 +369,8 @@
       </link>
     </model>
 
-    <!-- ==================== SHELVING RACK ROW B (center) ==================== -->
-    <!-- Rack B1 -->
+    <!-- shelfing rack row b(center) -->
+    <!-- rack b1 -->
     <model name="rack_b1">
       <static>true</static>
       <pose>-3 -4 0 0 0 0</pose>
