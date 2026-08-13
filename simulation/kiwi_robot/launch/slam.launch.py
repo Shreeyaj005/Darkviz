@@ -5,7 +5,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
-GAZEBO_LAUNCH_FILE = 'gazebo.launch.py'  # <-- change if yours is named differently
+GAZEBO_LAUNCH_FILE = 'gazebo.launch.py' 
 
 WHEEL_JOINTS = ['front_wheel_joint', 'rear_left_wheel_joint', 'rear_right_wheel_joint']
 
