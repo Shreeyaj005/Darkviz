@@ -15,7 +15,7 @@
 
 ---
 ## Proposal 
-https://youtu.be/RFOlutvGod4
+https://youtu.be/7PNNnmAVzm0?si=SbWJWXD1Y0URtpTx
 
 ## Guide Details
 
