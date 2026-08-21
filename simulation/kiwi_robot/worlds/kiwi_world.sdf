@@ -2,7 +2,7 @@
 <sdf version="1.8">
   <world name="kiwi_world">
 
-    <!--- physics -->
+    <!-- PHYSICS -->
     <gravity>0 0 -9.81</gravity>
     <physics name="default_physics" type="ode">
       <max_step_size>0.001</max_step_size>
@@ -16,21 +16,28 @@
       </ode>
     </physics>
 
-    <!-- plugins  -->
+    <!-- GUI  -->
+    <gui>
+      <camera name="user_camera">
+        <pose>12 -8 6 0 0.5 2.4</pose>
+      </camera>
+    </gui>
+
+    <!--  PLUGINS  -->
     <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
     <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
     <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
     <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors"/>
     <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact"/>
 
-    <!-- scene  -->
+    <!-- SCENE  -->
     <scene>
       <ambient>0.4 0.4 0.4 1</ambient>
       <background>0.2 0.2 0.3 1</background>
     </scene>
 
-    <!-- lighting  -->
-    <!-- overhead warehouse ligting -->
+    <!--  LIGHTING  -->
+    <!-- Overhead warehouse lights -->
     <light type="directional" name="warehouse_light_main">
       <cast_shadows>true</cast_shadows>
       <pose>0 0 12 0 0 0</pose>
@@ -63,7 +70,7 @@
       </attenuation>
     </light>
 
-    <!-- ground plane -->
+    <!-- GROUND PLANE -->
     <model name="ground_plane">
       <static>true</static>
       <link name="link">
@@ -98,7 +105,7 @@
       </link>
     </model>
 
-    <!--  floor  -->
+    <!--  WAREHOUSE FLOOR  -->
     <model name="warehouse_floor">
       <static>true</static>
       <pose>0 0 0.001 0 0 0</pose>
@@ -115,8 +122,8 @@
       </link>
     </model>
 
-    <!-- walls -->
-    <!-- norht wall -->
+    <!-- WAREHOUSE WALLS -->
+    <!-- North wall -->
     <model name="wall_north">
       <static>true</static>
       <pose>0 8 2.5 0 0 0</pose>
@@ -204,9 +211,9 @@
       </link>
     </model>
 
-    <!--  shelfing rack row (left side) -->
-    <!-- rack A1 -->
-    <model name="rack_a1">
+    <!--  SHELVING RACK ROW A (left side) -->
+    <!-- Rack A1 -->
+    <model name="aisle_1_shelf_1">
       <static>true</static>
       <pose>-7 -4 0 0 0 0</pose>
       <link name="link">
@@ -264,7 +271,7 @@
     </model>
 
     <!-- Rack A2 -->
-    <model name="rack_a2">
+    <model name="aisle_1_shelf_2">
       <static>true</static>
       <pose>-7 -1 0 0 0 0</pose>
       <link name="link">
@@ -317,7 +324,7 @@
     </model>
 
     <!-- Rack A3 -->
-    <model name="rack_a3">
+    <model name="aisle_1_shelf_3">
       <static>true</static>
       <pose>-7 2 0 0 0 0</pose>
       <link name="link">
@@ -369,9 +376,9 @@
       </link>
     </model>
 
-    <!-- shelfing rack row b(center) -->
-    <!-- rack b1 -->
-    <model name="rack_b1">
+    <!--  SHELVING RACK ROW B (center)  -->
+    <!-- Rack B1 -->
+    <model name="aisle_2_shelf_1">
       <static>true</static>
       <pose>-3 -4 0 0 0 0</pose>
       <link name="link">
@@ -424,7 +431,7 @@
     </model>
 
     <!-- Rack B2 -->
-    <model name="rack_b2">
+    <model name="aisle_2_shelf_2">
       <static>true</static>
       <pose>-3 -1 0 0 0 0</pose>
       <link name="link">
@@ -477,7 +484,7 @@
     </model>
 
     <!-- Rack B3 -->
-    <model name="rack_b3">
+    <model name="aisle_2_shelf_3">
       <static>true</static>
       <pose>-3 2 0 0 0 0</pose>
       <link name="link">
@@ -529,8 +536,8 @@
       </link>
     </model>
 
-    <!-- ==================== SHELVING RACK ROW C (right side) ==================== -->
-    <model name="rack_c1">
+    <!-- SHELVING RACK ROW C (right side)  -->
+    <model name="aisle_3_shelf_1">
       <static>true</static>
       <pose>1 -4 0 0 0 0</pose>
       <link name="link">
@@ -547,7 +554,7 @@
       </link>
     </model>
 
-    <model name="rack_c2">
+    <model name="aisle_3_shelf_2">
       <static>true</static>
       <pose>1 -1 0 0 0 0</pose>
       <link name="link">
@@ -564,7 +571,7 @@
       </link>
     </model>
 
-    <model name="rack_c3">
+    <model name="aisle_3_shelf_3">
       <static>true</static>
       <pose>1 2 0 0 0 0</pose>
       <link name="link">
@@ -581,13 +588,10 @@
       </link>
     </model>
 
-  
-    <!-- Drift render-confirm: a static observation camera so the render-confirm
-         observer can always see the scene, independent of the world's own sensors.
-         Inert (static, no collisions) — purely an observation post at the origin. -->
+ 
     <model name="render_confirm_cam">
       <static>true</static>
-      <pose>3 0 2 0 0.34 3.14159</pose>
+      <pose>3 0 2 0 0.34 0</pose>
       <link name="link">
         <sensor type="camera" name="render_confirm_camera">
           <topic>/render_confirm/camera</topic>
@@ -606,6 +610,59 @@
             </clip>
           </camera>
         </sensor>
+      </link>
+    </model>
+
+    <!-- conveyor belt  -->
+    <model name="conveyor_belt_1">
+      <static>true</static>
+      <pose>6 0 0 0 0 1.5708</pose>
+      <link name="link">
+        <visual name="leg_1_visual">
+          <pose>-2.5 0 0.35 0 0 0</pose>
+          <geometry><box><size>0.1 0.1 0.7</size></box></geometry>
+          <material><ambient>0.25 0.25 0.28 1</ambient><diffuse>0.3 0.3 0.33 1</diffuse></material>
+        </visual>
+        <collision name="leg_1_collision">
+          <pose>-2.5 0 0.35 0 0 0</pose>
+          <geometry><box><size>0.1 0.1 0.7</size></box></geometry>
+        </collision>
+        <visual name="leg_2_visual">
+          <pose>2.5 0 0.35 0 0 0</pose>
+          <geometry><box><size>0.1 0.1 0.7</size></box></geometry>
+          <material><ambient>0.25 0.25 0.28 1</ambient><diffuse>0.3 0.3 0.33 1</diffuse></material>
+        </visual>
+        <collision name="leg_2_collision">
+          <pose>2.5 0 0.35 0 0 0</pose>
+          <geometry><box><size>0.1 0.1 0.7</size></box></geometry>
+        </collision>
+        <visual name="belt_surface_visual">
+          <pose>0 0 0.74 0 0 0</pose>
+          <geometry><box><size>5.4 0.8 0.08</size></box></geometry>
+          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.15 0.15 0.15 1</diffuse></material>
+        </visual>
+        <collision name="belt_surface_collision">
+          <pose>0 0 0.74 0 0 0</pose>
+          <geometry><box><size>5.4 0.8 0.08</size></box></geometry>
+        </collision>
+        <visual name="roller_1_visual">
+          <pose>-2.6 0 0.74 1.5708 0 0</pose>
+          <geometry><cylinder><radius>0.1</radius><length>0.85</length></cylinder></geometry>
+          <material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+        </visual>
+        <collision name="roller_1_collision">
+          <pose>-2.6 0 0.74 1.5708 0 0</pose>
+          <geometry><cylinder><radius>0.1</radius><length>0.85</length></cylinder></geometry>
+        </collision>
+        <visual name="roller_2_visual">
+          <pose>2.6 0 0.74 1.5708 0 0</pose>
+          <geometry><cylinder><radius>0.1</radius><length>0.85</length></cylinder></geometry>
+          <material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.6 0.6 0.6 1</diffuse></material>
+        </visual>
+        <collision name="roller_2_collision">
+          <pose>2.6 0 0.74 1.5708 0 0</pose>
+          <geometry><cylinder><radius>0.1</radius><length>0.85</length></cylinder></geometry>
+        </collision>
       </link>
     </model>
 </world>
