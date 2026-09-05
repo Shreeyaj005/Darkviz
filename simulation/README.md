@@ -37,23 +37,23 @@ You should see:
 
 ```text
 Ubuntu: 24.04
-ROS_DISTRO: jazzy
+ROS_DISTRO: humble
 Gazebo: Harmonic / Gazebo Sim 8.x
 ```
 
 If `echo $ROS_DISTRO` does not return:
 
 ```text
-jazzy
+humble
 ```
 
-**stop here and install ROS 2 Jazzy.**
+**stop here and install ROS 2 humble.**
 
 ---
 
 ## Required ROS 2 Packages
 
-After installing ROS 2 Jazzy, install the packages required by the simulation:
+After installing ROS 2 Humble, install the packages required by the simulation:
 
 ```bash
 sudo apt update
