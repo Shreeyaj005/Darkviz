@@ -9,7 +9,7 @@ This directory contains the ROS 2 and Gazebo simulation environment for the Dark
 | Software             | Required Version     |
 | -------------------- | -------------------- |
 | **Operating System** | Ubuntu **24.04 LTS** |
-| **ROS 2**            | **Jazzy Jalisco**    |
+| **ROS 2**            | **Humble**    |
 | **Gazebo**           | **Harmonic**         |
 | **Gazebo Sim**       | **8.x**              |
 | **Python**           | Python 3.x           |
