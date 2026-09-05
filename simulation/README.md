@@ -1,110 +1,140 @@
-# Darkviz Simulation
+# Simulation
 
-This directory contains the ROS 2 and Gazebo simulation environment for the Darkviz project.
+A ROS 2 and Gazebo-based simulation environment for a Kiwi omni-directional mobile robot.
 
-## Required Environment
+## Requirements
 
-**Use these exact versions. Do not use a different ROS 2 or Gazebo version unless you know what you are doing.**
+The simulation requires the following environment:
 
-| Software             | Required Version     |
-| -------------------- | -------------------- |
-| **Operating System** | Ubuntu **24.04 LTS** |
-| **ROS 2**            | **Humble**    |
-| **Gazebo**           | **Harmonic**         |
-| **Gazebo Sim**       | **8.x**              |
-| **Python**           | Python 3.x           |
+| Software   | Version          |
+| ---------- | ---------------- |
+| **Ubuntu** | 22.04 LTS        |
+| **ROS 2**  | Humble Hawksbill |
+| **Gazebo** | Fortress         |
+| **Python** | 3.10.12             |
 
-ROS 2 Jazzy is officially paired with Gazebo Harmonic. Gazebo Harmonic uses the Gazebo Sim 8.x series.
+> **Important:** ROS 2 Humble is required. Using a different ROS 2 distribution may result in package or dependency incompatibilities.
 
-> **Important:** Do **not** install Gazebo Classic 11 for this project. This project uses the newer **Gazebo Sim / Harmonic** ecosystem and the `ros_gz` integration packages.
+### Verify the Environment
 
-### Check Your Versions
-
-Before running the simulation, verify your installation:
+Check the ROS 2 distribution:
 
 ```bash
-# Check Ubuntu
-lsb_release -a
-
-# Check ROS 2
 echo $ROS_DISTRO
-
-# Check Gazebo
-gz sim --version
 ```
 
-You should see:
-
-```text
-Ubuntu: 24.04
-ROS_DISTRO: humble
-Gazebo: Harmonic / Gazebo Sim 8.x
-```
-
-If `echo $ROS_DISTRO` does not return:
+Expected output:
 
 ```text
 humble
 ```
 
-**stop here and install ROS 2 humble.**
+Check the Ubuntu version:
+
+```bash
+lsb_release -a
+```
+
+Check the Gazebo installation:
+
+```bash
+gazebo --version
+```
 
 ---
 
-## Required ROS 2 Packages
+## Dependencies
 
-After installing ROS 2 Humble, install the packages required by the simulation:
+Install the required ROS 2 packages:
 
 ```bash
 sudo apt update
 
 sudo apt install \
-    ros-jazzy-xacro \
-    ros-jazzy-robot-state-publisher \
-    ros-jazzy-ros-gz-sim \
-    ros-jazzy-ros-gz-bridge \
-    ros-jazzy-slam-toolbox
+    ros-humble-xacro \
+    ros-humble-robot-state-publisher \
+    ros-humble-ros-gz-sim \
+    ros-humble-ros-gz-bridge \
+    ros-humble-slam-toolbox
 ```
 
-The `ros_gz` packages provide the integration between ROS 2 and Gazebo, including spawning models and bridging Gazebo topics to ROS 2.
+The simulation uses:
+
+* **ROS 2** for communication, control, and system integration
+* **Gazebo Fortress** for physics simulation and visualization
+* **Xacro / URDF** for the robot description
+* **ROS-Gazebo Bridge** for communication between ROS 2 and Gazebo
+* **SLAM Toolbox** for mapping and localization
 
 ---
 
-## Getting the Simulation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/Shreeyaj005/Darkviz.git
-cd Darkviz/simulation
-```
-
-The repository already contains the project-specific simulation files:
+## Directory Structure
 
 ```text
-kiwi_robot/
-├── config/
-├── launch/
-├── scripts/
-├── urdf/
-└── worlds/
+simulation/
+└── kiwi_robot/
+    ├── config/
+    │   └── slam_toolbox_params.yaml
+    │
+    ├── launch/
+    │   ├── gazebo.launch.py
+    │   └── slam.launch.py
+    │
+    ├── scripts/
+    │   ├── autonomous_controller.py
+    │   ├── navigation_controller.py
+    │   └── omni_drive_node.py
+    │
+    ├── urdf/
+    │   └── kiwi_robot.urdf.xacro
+    │
+    └── worlds/
+        └── kiwi_world.sdf
 ```
 
-You **do not** need to separately download the robot model, URDF, Gazebo world, launch files, or controller scripts.
+### `config/`
+
+Contains configuration files used by the simulation, including SLAM Toolbox parameters.
+
+### `launch/`
+
+Contains ROS 2 launch files for starting the simulation and SLAM pipeline.
+
+### `scripts/`
+
+Contains Python nodes for robot control, navigation, and omni-directional drive functionality.
+
+### `urdf/`
+
+Contains the Xacro-based robot description, including the robot's links, joints, sensors, and simulation properties.
+
+### `worlds/`
+
+Contains Gazebo world definitions used for the simulation environment.
 
 ---
 
-## Build
+## Setup
 
-From the `simulation` directory:
+Clone the repository containing the simulation and navigate to the simulation workspace:
 
 ```bash
-source /opt/ros/jazzy/setup.bash
+cd simulation
+```
 
+Source ROS 2 Humble:
+
+```bash
+source /opt/ros/humble/setup.bash
+```
+
+Build the workspace:
+
+```bash
 colcon build --symlink-install
 ```
 
-Then:
+Source the newly built workspace:
 
 ```bash
 source install/setup.bash
@@ -112,19 +142,23 @@ source install/setup.bash
 
 ---
 
-## Run
+## Running the Simulation
 
-Launch the Gazebo simulation:
+### Launch Gazebo
 
 ```bash
 ros2 launch kiwi_robot gazebo.launch.py
 ```
 
-In another terminal, source the environments again:
+This launches the Gazebo environment and spawns the Kiwi robot.
+
+### Launch SLAM
+
+In a separate terminal, source the required environments:
 
 ```bash
-source /opt/ros/jazzy/setup.bash
-source ~/Darkviz/simulation/install/setup.bash
+source /opt/ros/humble/setup.bash
+source simulation/install/setup.bash
 ```
 
 Then launch SLAM:
@@ -135,29 +169,60 @@ ros2 launch kiwi_robot slam.launch.py
 
 ---
 
-Use:
+## ROS 2 Commands
 
-**Ubuntu 24.04 + ROS 2 Jazzy + Gazebo Harmonic**
+Useful commands for inspecting the running simulation:
 
-This is the expected development environment.
+### List Nodes
+
+```bash
+ros2 node list
+```
+
+### List Topics
+
+```bash
+ros2 topic list
+```
+
+### Inspect a Topic
+
+```bash
+ros2 topic echo /<topic_name>
+```
+
+### Inspect Topic Information
+
+```bash
+ros2 topic info /<topic_name>
+```
+
+### List Available Packages
+
+```bash
+ros2 pkg list | grep kiwi
+```
 
 ---
 
-## Generated Files
+## Clean Build
 
-The following directories are generated locally by `colcon`:
-
-```text
-build/
-install/
-log/
-```
-
-They do not need to be downloaded or copied between machines.
-
-If they already exist and you want a completely clean build:
+If the workspace needs to be rebuilt from scratch:
 
 ```bash
 rm -rf build install log
 colcon build --symlink-install
+source install/setup.bash
 ```
+
+The `build/`, `install/`, and `log/` directories are generated automatically by `colcon` and do not need to be manually downloaded or copied.
+
+---
+
+## Notes
+
+* Use **Ubuntu 22.04 + ROS 2 Humble** for the intended environment.
+* Ensure all required ROS 2 packages are installed before building.
+* Source `/opt/ros/humble/setup.bash` before using ROS 2 commands.
+* Source the local `install/setup.bash` after building the workspace.
+* The simulation source files are contained within the `kiwi_robot` package.
