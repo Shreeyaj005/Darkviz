@@ -3,7 +3,7 @@ project(kiwi_robot)
 
 find_package(ament_cmake REQUIRED)
 
-# Install launch files
+# Install launch, config, URDF and world files
 install(DIRECTORY
   launch
   config
@@ -12,10 +12,11 @@ install(DIRECTORY
   DESTINATION share/${PROJECT_NAME}
 )
 
-install(
-  PROGRAMS
-    scripts/autonomous_controller.py
-    scripts/navigation_controller.py
+# Install Python nodes
+install(PROGRAMS
+  scripts/autonomous_controller.py
+  scripts/navigation_controller.py
+  scripts/keyboard_teleop.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -24,4 +25,11 @@ install(PROGRAMS
   DESTINATION lib/${PROJECT_NAME}
   RENAME omni_drive_node
 )
+
+install(PROGRAMS
+  scripts/odometry_node.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME odometry_node
+)
+
 ament_package()
