@@ -186,18 +186,30 @@
 
   <gazebo reference="front_wheel">
     <material>Gazebo/Black</material>
-    <mu1>1.0</mu1>
+    <!-- Kiwi/omni wheel: this cylinder has no modeled rollers, so friction
+         must be anisotropic to emulate one. fdir1 is expressed in this
+         wheel link's own frame, where local Z is the wheel's spin/axle
+         axis (which maps to the robot-relative RADIAL direction — the
+         direction the omni kinematics need to slip freely). mu1 (along
+         fdir1) stays low so the wheel can slide radially; mu2 (perpendicular,
+         the tangential rolling direction) stays high for drive traction. -->
+    <mu1>0.02</mu1>
     <mu2>1.0</mu2>
+    <fdir1>0 0 1</fdir1>
   </gazebo>
   <gazebo reference="rear_left_wheel">
     <material>Gazebo/Black</material>
-    <mu1>1.0</mu1>
+    <!-- see front_wheel comment: anisotropic friction emulates the omni roller -->
+    <mu1>0.02</mu1>
     <mu2>1.0</mu2>
+    <fdir1>0 0 1</fdir1>
   </gazebo>
   <gazebo reference="rear_right_wheel">
     <material>Gazebo/Black</material>
-    <mu1>1.0</mu1>
+    <!-- see front_wheel comment: anisotropic friction emulates the omni roller -->
+    <mu1>0.02</mu1>
     <mu2>1.0</mu2>
+    <fdir1>0 0 1</fdir1>
   </gazebo>
   <gazebo reference="lidar_link">
     <material>Gazebo/Blue</material>
