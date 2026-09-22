@@ -232,28 +232,26 @@ Add circuit diagram image here.
 ---
 
 ## Flowchart / Algorithm
+<img width="1920" height="1080" alt="SLAM" src="https://github.com/user-attachments/assets/0dfdbea6-db05-4d98-ba39-9a87820f91ac" />
 
-Add flowchart image here.
-
-```markdown
-![Flowchart](images/flowchart.png)
-```
 
 ### Algorithm
 
-1. Start
-2. Initialize the system
-3. Read input from sensors/user
-4. Process the data
-5. Generate output/control action
-6. Display/store/transmit result
-7. Stop
+1. **Initialize System** — Start ROS 2 nodes, robot model, sensors, and simulation environment.
+2. **Map Environment** — Use LiDAR and odometry with SLAM Toolbox to generate a 2D map of the dark-store.
+3. **Localize Robot** — Estimate the robot's position within the generated map.
+4. **Set Target** — Receive the target shelf or order-fulfillment location.
+5. **Plan Path** — Use Nav2 to generate a collision-free path to the target.
+6. **Navigate** — Generate velocity commands and move the omni-directional robot toward the target.
+7. **Avoid Obstacles** — Continuously process LiDAR data and update navigation commands when obstacles are detected.
+8. **Complete Task** — Stop at the target location or proceed to the next assigned target.
+9. **Repeat** — Continue the process until all assigned tasks are completed.
 
 ---
 
 ## Implementation Details
 
-Explain the actual implementation of the project.
+DarkViz is implemented as a ROS 2 Humble-based autonomous omni-directional robotic system designed for inventory handling and order fulfillment in a dark-store environment. The system combines robot modelling, LiDAR-based perception, odometry, 2D SLAM, autonomous navigation, and motion control within a Gazebo simulation.
 
 ### Hardware Implementation
 
@@ -261,7 +259,18 @@ Write details about connections, components, power supply, sensors, actuators, P
 
 ### Software Implementation
 
-Write details about code structure, libraries used, algorithms, communication protocols, database, app, cloud, etc.
+DarkViz is implemented using **ROS 2 Humble** with Gazebo for simulation and RViz2 for visualization. The robot is modelled using **URDF/Xacro**, while Python and C++ ROS 2 nodes handle control, odometry, sensor processing, and navigation.
+
+* **SLAM Toolbox** — 2D mapping and localization using LiDAR and odometry
+* **Nav2** — autonomous path planning and obstacle avoidance
+* **ROS 2 Topics & TF** — communication and coordinate-frame management
+* **Gazebo** — dark-store environment and robot simulation
+* **RViz2** — visualization of maps, LiDAR, TF, and navigation
+* **Python/C++** — robot control and processing nodes
+
+The overall pipeline is:
+
+**LiDAR + Odometry → SLAM/Localization → Navigation → `/cmd_vel` → Omni-directional Robot Motion**
 
 ---
 
@@ -343,18 +352,11 @@ Mention the expected output of the project.
 
 ## Result Images / Videos
 
-Add images or videos of the working prototype.
 
-```markdown
-![Prototype](images/prototype_photo.jpg)
-```
+<img width="1600" height="1200" alt="WhatsApp Image 2026-09-22 at 9 46 26 PM" src="https://github.com/user-attachments/assets/3ccfabec-76b7-4a7d-a174-7382a1c0541a" />
 
 Video Link:
-
-```markdown
-[Project Demo Video](https://drive.google.com/your-video-link)
-```
-
+https://youtu.be/ZUh2bRQQ1O0
 ---
 
 ## Applications
