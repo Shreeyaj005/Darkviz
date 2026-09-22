@@ -142,6 +142,12 @@ class NavigationController(Node):
 
         self.goal_active = False
 
+        # Hysteresis state — prevents command chattering ("fidgeting")
+        # when front distance or heading error hovers right at a
+        # single hard threshold.
+        self.avoiding_obstacle = False
+        self.correcting_heading = False
+
         # ---------------------------------------------------------
         # Control timer
         # ---------------------------------------------------------
@@ -422,10 +428,17 @@ class NavigationController(Node):
             return
 
         # =========================================================
-        # OBSTACLE AHEAD
+        # OBSTACLE AHEAD (hysteresis: enter/exit at different
+        # distances so `front` hovering near one threshold doesn't
+        # flip the command back and forth every tick)
         # =========================================================
 
         if front < self.obstacle_distance:
+            self.avoiding_obstacle = True
+        elif front > self.obstacle_distance * 1.3:
+            self.avoiding_obstacle = False
+
+        if self.avoiding_obstacle:
 
             # Move sideways toward the side with more clearance.
 
@@ -524,12 +537,28 @@ class NavigationController(Node):
             math.cos(heading_error)
         )
 
-        if abs(heading_error) > math.radians(70):
+        # Hysteresis + proportional scaling: snapping angular.z between
+        # 0 and full speed at one exact heading_error threshold makes
+        # the command chatter as heading_error hovers right at that
+        # boundary. Start correcting above 70 deg, keep correcting
+        # until it drops below 35 deg (wide deadband gap), and ease
+        # the command in/out proportionally instead of a hard jump.
+        enter_threshold = math.radians(70)
+        exit_threshold = math.radians(35)
+
+        if abs(heading_error) > enter_threshold:
+            self.correcting_heading = True
+        elif abs(heading_error) < exit_threshold:
+            self.correcting_heading = False
+
+        if self.correcting_heading:
+
+            angular_scale = min(1.0, abs(heading_error) / enter_threshold)
 
             cmd.angular.z = (
-                self.angular_speed
+                self.angular_speed * angular_scale
                 if heading_error > 0
-                else -self.angular_speed
+                else -self.angular_speed * angular_scale
             )
 
         else:
