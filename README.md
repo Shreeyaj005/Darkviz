@@ -237,15 +237,15 @@ Add circuit diagram image here.
 
 ### Algorithm
 
-1. **Initialize System** — Start ROS 2 nodes, robot model, sensors, and simulation environment.
-2. **Map Environment** — Use LiDAR and odometry with SLAM Toolbox to generate a 2D map of the dark-store.
-3. **Localize Robot** — Estimate the robot's position within the generated map.
-4. **Set Target** — Receive the target shelf or order-fulfillment location.
-5. **Plan Path** — Use Nav2 to generate a collision-free path to the target.
-6. **Navigate** — Generate velocity commands and move the omni-directional robot toward the target.
-7. **Avoid Obstacles** — Continuously process LiDAR data and update navigation commands when obstacles are detected.
-8. **Complete Task** — Stop at the target location or proceed to the next assigned target.
-9. **Repeat** — Continue the process until all assigned tasks are completed.
+1. **Initialize System** : Start ROS 2 nodes, robot model, sensors, and simulation environment.
+2. **Map Environment** : Use LiDAR and odometry with SLAM Toolbox to generate a 2D map of the dark-store.
+3. **Localize Robot**: Estimate the robot's position within the generated map.
+4. **Set Target** : Receive the target shelf or order-fulfillment location.
+5. **Plan Path** : Use Nav2 to generate a collision-free path to the target.
+6. **Navigate** : Generate velocity commands and move the omni-directional robot toward the target.
+7. **Avoid Obstacles** : Continuously process LiDAR data and update navigation commands when obstacles are detected.
+8. **Complete Task** : Stop at the target location or proceed to the next assigned target.
+9. **Repeat** : Continue the process until all assigned tasks are completed.
 
 ---
 
@@ -311,33 +311,41 @@ BE-Capstone-Project/
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/username/project-name.git
+git clone https://github.com/Shreeyaj005/Darkviz.git
+cd Darkviz/software/simulation
 ```
 
 ### Step 2: Install Dependencies
 
 ```bash
-pip install -r requirements.txt
+source /opt/ros/humble/setup.bash
+colcon build
+source install/setup.bash
 ```
 
-or mention specific software/library installation steps.
-
-### Step 3: Upload / Run the Code
+### Step 3: Launch Simulation
 
 ```bash
-python main.py
+ros2 launch kiwi_robot gazebo.launch.py
 ```
+This launches the DarkViz robot and the simulated dark-store environment in Gazebo.
 
-or
 
+### Step 4: Run SLAM
+In a new terminal:
 ```bash
-arduino-cli upload -p COMx --fqbn board_name
+cd ~/Darkviz/software/simulation
+source /opt/ros/humble/setup.bash
+source install/setup.bash
+ros2 launch kiwi_robot slam.launch.py
 ```
+RViz2 can be used to visualize the LiDAR data, TF frames, and generated 2D map.
 
-### Step 4: Observe the Output
+### Step 5: Control and Navigate the Robot
+The robot can be controlled using the available ROS 2 control/navigation nodes. Navigation commands are published through /cmd_vel, while LiDAR and odometry provide feedback for localization and obstacle avoidance.
 
-Mention the expected output of the project.
-
+### Expected Output
+The Gazebo simulation should start with the DarkViz omni-directional robot inside the simulated dark-store. The robot's LiDAR and odometry data should be available through ROS 2 topics, and SLAM should progressively generate a 2D map of the environment.
 ---
 
 ## Testing and Results
@@ -361,41 +369,32 @@ https://youtu.be/ZUh2bRQQ1O0
 
 ## Applications
 
-Mention real-world applications of the project.
-
-1.
-2.
-3.
-4.
+1. Dark-Store Order Fulfillment — Autonomous movement between storage shelves and order collection areas.
+2. Inventory Management — Automated navigation for inventory inspection, stock monitoring, and shelf-level data collection.
+3. Warehouse Automation — Autonomous transportation of goods between storage and packing areas.
 
 ---
 
 ## Advantages
 
-1.
-2.
-3.
-4.
-
+1. Omni-Directional Mobility: Enables lateral movement and precise positioning in narrow aisles.
+2. Autonomous Navigation: Uses SLAM and Nav2 for mapping, localization, path planning, and obstacle avoidance.
+3. Modular ROS 2 Architecture: Individual perception, control, and navigation components can be developed and modified independently.
+4. Simulation-Based Development: Gazebo enables testing and validation of the robotic system before deployment on physical hardware.
 ---
 
 ## Limitations
-
-1.
-2.
-3.
-4.
+1. Simulation Environment: Current implementation is primarily validated in simulation and may require further testing on physical hardware.
+2. 2D Perception: The current LiDAR-based system provides primarily 2D environmental information.
+3. Simplified Inventory Handling: Physical picking, gripping, and placement mechanisms are not yet fully integrated.
+4. Environmental Dependence: Navigation performance can be affected by dynamic obstacles, sensor noise, and changes in the store layout.
 
 ---
 
 ## Future Scope
-
-Mention possible improvements.
-
-1.
-2.
-3.
-4.
+1. Automated Picking: Add robotic manipulation for shelf-level item detection, picking, and placement.
+2. Computer Vision Integration: Use cameras and vision models for product recognition, shelf monitoring, and inventory tracking.
+3. Multi-Robot Coordination: Extend the system to coordinate multiple robots for parallel order fulfillment and inventory operations.
 
 ---
 
