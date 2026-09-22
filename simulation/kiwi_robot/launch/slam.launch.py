@@ -55,6 +55,13 @@ def generate_launch_description():
         output='screen',
     )
 
+    odometry_node = Node(
+        package='kiwi_robot',
+        executable='odometry_node',
+        name='odometry_node',
+        output='screen',
+    )
+    
     # stagger startup so Gazebo/bridge are up before anything subscribes.
     delayed_wheel_bridge = TimerAction(period=3.0, actions=[wheel_bridge])
     delayed_omni = TimerAction(period=4.0, actions=[omni_drive_node])

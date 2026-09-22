@@ -54,7 +54,11 @@ def generate_launch_description():
         ],
     )
 
-    # Bridge: clock, cmd_vel, odom, scan, joint_states, tf
+    # Bridge: clock, odom, scan, joint_states, tf, and the three per-wheel
+    # velocity commands the JointController plugins actually listen to.
+    # (The generic /cmd_vel Twist bridge is kept out on purpose — nothing on
+    # the Gazebo side subscribes to a Twist; this is an omni/kiwi drive
+    # controlled per-wheel via Float64 -> gz.msgs.Double topics.)
     bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
@@ -62,17 +66,31 @@ def generate_launch_description():
             '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
             '/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
             '/model/kiwi_robot/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model',
-            '/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist',
             '/model/kiwi_robot/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
             '/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
+            '/model/kiwi_robot/joint/front_wheel_joint/cmd_vel@std_msgs/msg/Float64]gz.msgs.Double',
+            '/model/kiwi_robot/joint/rear_left_wheel_joint/cmd_vel@std_msgs/msg/Float64]gz.msgs.Double',
+            '/model/kiwi_robot/joint/rear_right_wheel_joint/cmd_vel@std_msgs/msg/Float64]gz.msgs.Double',
         ],
         parameters=[{'use_sim_time': use_sim_time}],
         output='screen',
     )
+
+    # Converts /cmd_vel (Twist) into the three wheel speed commands above —
+    # this was never launched before, so no drive command could ever reach
+    # the simulated wheels.
+    omni_drive_node = Node(
+        package='kiwi_robot',
+        executable='omni_drive_node',
+        parameters=[{'use_sim_time': use_sim_time}],
+        output='screen',
+    )
+
     return LaunchDescription([
         DeclareLaunchArgument('use_sim_time', default_value='true'),
         robot_state_publisher,
         gazebo,
         spawn_robot,
         bridge,
+        omni_drive_node,
     ])
