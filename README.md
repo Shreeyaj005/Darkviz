@@ -182,10 +182,10 @@ Explain the step-by-step approach.
 | Week 1       | Problem finalization  |           Completed               |
 | Week 2       | Literature survey     |           Completed               |
 | Week 3       | Requirement analysis  |           Completed               |
-| Week 4       | System design         |           in progress             |
-| Week 5       | Prototype development |           in progress             |
-| Week 6       | Testing               |           pending                 |
-| Week 7       | Documentation         |           in progress             |
+| Week 4       | System design         |           In Progress             |
+| Week 5       | Prototype development |           In Progress             |
+| Week 6       | Testing               |           Pending                 |
+| Week 7       | Documentation         |           In Progress             |
 | Week 8       | Paper writing         |           pending                 |
 
 ---
@@ -213,11 +213,11 @@ Upload and link all design files here.
 
 | File Type       | File Name / Link | Description |
 | --------------- | ---------------- | ----------- |
-| CAD Model       |                  |             |
+| CAD Model       | Darkviz/hardware | Folder contains .step and .stl files for model  |
 | Circuit Diagram |                  |             |
 | PCB Design      |                  |             |
 | Flowchart       |                  |             |
-| Simulation File |                  |             |
+| Simulation File |simulation/kiwi_robot/scripts/autonomous_controller.py  | Autonomous controller script for the robot to explore environment. Run slam.launch.py before running the script|
 
 ---
 
@@ -277,32 +277,44 @@ The overall pipeline is:
 ## Code Structure
 
 ```text
-BE-Capstone-Project/
+Darkviz/
 │
-├── README.md
 ├── docs/
-│   ├── literature_survey.md
-│   ├── project_report.pdf
-│   └── presentation.pptx
+│   └── literarture_survey.md
 │
 ├── hardware/
-│   ├── circuit_diagram.png
-│   ├── pcb_design/
-│   └── cad_model/
-│
-├── software/
-│   ├── src/
-│   ├── include/
-│   └── tests/
+│   ├── darkviz_base.f3d
+│   ├── darkviz_base.stl
+│   ├── final design.step
+│   └── hardware.md
 │
 ├── images/
-│   ├── system_architecture.png
-│   ├── prototype_photo.jpg
-│   └── results.png
+│   ├── 3d_printed_prototype_assembled.jpg
+│   ├── 3d_printed_prototype_top_view.jpg
+│   ├── Ideation.jpeg
+│   ├── images.md
+│   └── Linear Guide Rail.png
 │
-└── references/
-    └── papers/
-```
+├── simulation/
+│   ├── kiwi_robot/
+│   │   ├── CMakeLists.txt
+│   │   ├── package.xml
+│   │   ├── config/
+│   │   ├── launch/
+│   │   ├── scripts/
+│   │   ├── urdf/
+│   │   └── worlds/
+│   │
+│   └── README.md
+│
+├── software/
+│   ├── kiwi_drive_control.ino
+│   └── software.md
+│
+├── reference/
+│   └── paper.md
+│
+└── README.md```
 
 ---
 
