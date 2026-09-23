@@ -3,6 +3,7 @@ build/
 install/
 log/
 log/latest_build
+.drift/
 # Python
 __pycache__/
 *.py[cod]
