@@ -109,7 +109,7 @@ Channel B is **unused**.
 | B01 | Unused |
 | B02 | Unused |
 
-> **Note:** Unused driver inputs should be held at a defined logic level rather than left floating. BIN1 and BIN2 are tied to GND. PWMB can be tied low to keep the unused channel disabled.
+BIN1 and BIN2 are tied to GND. PWMB can be tied low to keep the unused channel disabled.
 
 ---
 
@@ -199,12 +199,3 @@ Motor Driver 2 controls:
 
 ---
 
-## Important Notes
-
-- All ESP32, encoder, and TB6612FNG logic grounds must share a **common GND**.
-- Encoder VCC is connected to **3.3V**.
-- Motor power is supplied separately through **VM**.
-- `A01/A02` and `B01/B02` are **motor output pins**. They connect to the two motor wires; they are not ESP32 input/output GPIOs.
-- `AIN1/AIN2`, `BIN1/BIN2`, and `PWM` are the control inputs driven by the ESP32.
-- `STBY` must be HIGH for the TB6612FNG outputs to operate.
-- GPIO 36 and GPIO 39 are input-only ESP32 pins and do not have internal pull-up resistors. If the Hall encoder outputs require pull-ups, use appropriate external pull-up resistors.
