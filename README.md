@@ -186,7 +186,7 @@ Explain the step-by-step approach.
 | Week 5       | Prototype development |           In Progress             |
 | Week 6       | Testing               |           Pending                 |
 | Week 7       | Documentation         |           In Progress             |
-| Week 8       | Paper writing         |           pending                 |
+| Week 8       | Paper writing         |           In Progress                |
 
 ---
 
@@ -416,7 +416,7 @@ https://youtu.be/ZUh2bRQQ1O0
 | ------------------------- | --------------------------------------------------------- |
 | Paper Title               |                                                           |
 | Conference / Journal Name |                                                           |
-| Paper Status              | Not Started / Drafting / Submitted / Accepted / Published |
+| Paper Status              |  Drafting                                                 |
 | Submission Date           |                                                           |
 | Paper Link                |                                                           |
 
