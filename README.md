@@ -430,7 +430,7 @@ Example:
 
 ```text
 [1] A. Author, B. Author, "Title of the Paper," Journal/Conference Name, vol. X, no. Y, pp. xx-yy, Year.
-[2] Datasheet / Website / Book reference.
+[2] Datasheet / https://benchrobotics.com/arduino/slide-omniwheel-robot-platform / Book reference.
 ```
 
 ---
