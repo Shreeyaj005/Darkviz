@@ -1,0 +1,565 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="kiwi_robot">
+
+  <!-- =====================================================================
+       KIWI ROBOT  -  sim model matched to the physical build
+
+       Layers (bottom -> top):
+         1. Hex base plate  : 3x DC gear motors + omni wheels, ESP32 in clear
+                              acrylic enclosure
+         2. Hex middle plate: "sensor layer" with the 360 deg LiDAR
+         3. Hex top plate   : 2x stepper (A1, T1), timing belts, linear guide
+                              rail, sliding tray (prismatic joint)
+         Plates are joined by 3 aluminum standoffs.
+
+       UNCHANGED vs. previous version (so omni_drive_node.py / SLAM still work):
+         wheel_radius, wheel_offset, wheel angles (90 / 210 / -30),
+         wheel joint names + axes, JointController topics, odometry plugin,
+         lidar_link frame, /scan topic.
+       ===================================================================== -->
+
+  <!-- ==================== PROPERTIES ==================== -->
+  <!-- Drive geometry (DO NOT CHANGE without updating omni_drive_node.py) -->
+  <xacro:property name="wheel_radius" value="0.06"/>
+  <xacro:property name="wheel_width" value="0.05"/>
+  <xacro:property name="wheel_mass" value="0.9"/>
+  <xacro:property name="wheel_offset" value="0.24"/>
+
+  <!-- Omni wheel detail (visual only; collision stays a plain cylinder) -->
+  <xacro:property name="roller_radius" value="0.016"/>
+  <xacro:property name="roller_length" value="0.024"/>
+  <xacro:property name="rollers_per_row" value="8"/>
+  <xacro:property name="roller_row_dz" value="0.013"/>
+  <xacro:property name="roller_ring_radius" value="${wheel_radius - roller_radius}"/>
+
+  <!-- Hex plates (circumradius; vertices point at the wheels) -->
+  <xacro:property name="plate_radius" value="0.22"/>
+  <xacro:property name="base_plate_t" value="0.012"/>
+  <xacro:property name="mid_plate_t" value="0.010"/>
+  <xacro:property name="top_plate_t" value="0.010"/>
+  <xacro:property name="chassis_mass" value="5.0"/>   <!-- base plate + battery/electronics -->
+
+  <!-- Vertical layout, all measured from base_link origin (= base plate center) -->
+  <xacro:property name="axle_drop" value="0.036"/>     <!-- wheel axle is this far below base_link -->
+  <xacro:property name="mid_z" value="0.101"/>
+  <xacro:property name="top_z" value="0.231"/>
+  <xacro:property name="standoff_len" value="0.22"/>
+  <xacro:property name="standoff_z" value="0.116"/>
+  <xacro:property name="standoff_pos_r" value="0.15"/>
+  <xacro:property name="standoff_radius" value="0.006"/>
+
+  <!-- LiDAR (sits on the middle plate) -->
+  <xacro:property name="lidar_radius" value="0.07"/>
+  <xacro:property name="lidar_height" value="0.08"/>
+  <xacro:property name="lidar_mass" value="0.6"/>
+  <xacro:property name="lidar_z" value="${mid_z + mid_plate_t/2.0 + lidar_height/2.0}"/>
+
+  <!-- Tray / linear axis on top plate -->
+  <xacro:property name="top_surface_z" value="${top_z + top_plate_t/2.0}"/>
+  <xacro:property name="rail_h" value="0.012"/>
+  <xacro:property name="tray_travel" value="0.15"/>
+
+  <!-- ==================== INERTIA MACROS ==================== -->
+  <xacro:macro name="cylinder_inertia" params="m r h">
+    <inertial>
+      <mass value="${m}"/>
+      <inertia ixx="${(m/12.0)*(3*r*r + h*h)}" ixy="0" ixz="0"
+               iyy="${(m/12.0)*(3*r*r + h*h)}" iyz="0"
+               izz="${(m/2.0)*r*r}"/>
+    </inertial>
+  </xacro:macro>
+
+  <xacro:macro name="box_inertia" params="m x y z">
+    <inertial>
+      <mass value="${m}"/>
+      <inertia ixx="${(m/12.0)*(y*y + z*z)}" ixy="0" ixz="0"
+               iyy="${(m/12.0)*(x*x + z*z)}" iyz="0"
+               izz="${(m/12.0)*(x*x + y*y)}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- ==================== MATERIALS ==================== -->
+  <material name="dark_gray">
+    <color rgba="0.2 0.2 0.2 1.0"/>
+  </material>
+  <material name="silver">
+    <color rgba="0.7 0.7 0.75 1.0"/>
+  </material>
+  <material name="black">
+    <color rgba="0.05 0.05 0.05 1.0"/>
+  </material>
+  <material name="green_accent">
+    <color rgba="0.2 0.8 0.3 1.0"/>
+  </material>
+  <material name="blue_sensor">
+    <color rgba="0.1 0.3 0.8 1.0"/>
+  </material>
+  <material name="plate_white">
+    <color rgba="0.88 0.88 0.85 1.0"/>
+  </material>
+  <material name="acrylic">
+    <color rgba="0.75 0.88 1.0 0.35"/>
+  </material>
+  <material name="motor_gray">
+    <color rgba="0.35 0.37 0.42 1.0"/>
+  </material>
+  <material name="roller_gray">
+    <color rgba="0.12 0.12 0.13 1.0"/>
+  </material>
+  <material name="pcb_green">
+    <color rgba="0.1 0.45 0.2 1.0"/>
+  </material>
+  <material name="stepper_black">
+    <color rgba="0.1 0.1 0.12 1.0"/>
+  </material>
+  <material name="lidar_black">
+    <color rgba="0.08 0.08 0.1 1.0"/>
+  </material>
+
+  <!-- ==================== GENERIC PART MACROS ==================== -->
+  <!-- A box-shaped link fixed to `parent`. Collision is off unless collide:=true -->
+  <xacro:macro name="box_part" params="name xyz size_x size_y size_z mass material rpy:='0 0 0' collide:=false parent:=base_link">
+    <link name="${name}">
+      <xacro:box_inertia m="${mass}" x="${size_x}" y="${size_y}" z="${size_z}"/>
+      <visual>
+        <geometry><box size="${size_x} ${size_y} ${size_z}"/></geometry>
+        <material name="${material}"/>
+      </visual>
+      <xacro:if value="${collide}">
+        <collision>
+          <geometry><box size="${size_x} ${size_y} ${size_z}"/></geometry>
+        </collision>
+      </xacro:if>
+    </link>
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${name}"/>
+      <origin xyz="${xyz}" rpy="${rpy}"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- A vertical cylinder-shaped link fixed to `parent` -->
+  <xacro:macro name="cyl_part" params="name xyz radius length mass material rpy:='0 0 0' collide:=false parent:=base_link">
+    <link name="${name}">
+      <xacro:cylinder_inertia m="${mass}" r="${radius}" h="${length}"/>
+      <visual>
+        <geometry><cylinder radius="${radius}" length="${length}"/></geometry>
+        <material name="${material}"/>
+      </visual>
+      <xacro:if value="${collide}">
+        <collision>
+          <geometry><cylinder radius="${radius}" length="${length}"/></geometry>
+        </collision>
+      </xacro:if>
+    </link>
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${name}"/>
+      <origin xyz="${xyz}" rpy="${rpy}"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- ==================== HEXAGON PLATE ====================
+       A regular hexagon (circumradius r, vertices at 30/90/150/... deg) is
+       exactly the union of three rectangles r x sqrt(3)*r rotated 30/90/150 deg.
+       This gives a true hex using only box primitives (no mesh files). -->
+  <xacro:macro name="hex_slab" params="r t yaw material collide">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 ${yaw}"/>
+      <geometry><box size="${r} ${sqrt(3)*r} ${t}"/></geometry>
+      <material name="${material}"/>
+    </visual>
+    <xacro:if value="${collide}">
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 ${yaw}"/>
+        <geometry><box size="${r} ${sqrt(3)*r} ${t}"/></geometry>
+      </collision>
+    </xacro:if>
+  </xacro:macro>
+
+  <xacro:macro name="hex_plate" params="r t material collide:=false">
+    <xacro:hex_slab r="${r}" t="${t}" yaw="${radians(30)}"  material="${material}" collide="${collide}"/>
+    <xacro:hex_slab r="${r}" t="${t}" yaw="${radians(90)}"  material="${material}" collide="${collide}"/>
+    <xacro:hex_slab r="${r}" t="${t}" yaw="${radians(150)}" material="${material}" collide="${collide}"/>
+  </xacro:macro>
+
+  <!-- ==================== BASE FOOTPRINT ==================== -->
+  <link name="base_footprint"/>
+
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 ${wheel_radius + axle_drop}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ==================== BASE LINK (HEX BASE PLATE) ==================== -->
+  <link name="base_link">
+    <xacro:cylinder_inertia m="${chassis_mass}" r="${plate_radius}" h="${base_plate_t}"/>
+    <xacro:hex_plate r="${plate_radius}" t="${base_plate_t}" material="plate_white" collide="true"/>
+  </link>
+
+  <!-- ==================== MIDDLE PLATE (SENSOR LAYER) ==================== -->
+  <link name="mid_plate">
+    <xacro:cylinder_inertia m="0.5" r="${plate_radius}" h="${mid_plate_t}"/>
+    <xacro:hex_plate r="${plate_radius}" t="${mid_plate_t}" material="plate_white"/>
+  </link>
+  <joint name="mid_plate_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="mid_plate"/>
+    <origin xyz="0 0 ${mid_z}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ==================== TOP PLATE (TRAY DECK) ==================== -->
+  <link name="top_plate">
+    <xacro:cylinder_inertia m="0.5" r="${plate_radius}" h="${top_plate_t}"/>
+    <xacro:hex_plate r="${plate_radius}" t="${top_plate_t}" material="plate_white" collide="true"/>
+  </link>
+  <joint name="top_plate_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="top_plate"/>
+    <origin xyz="0 0 ${top_z}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ==================== ALUMINUM STANDOFFS (3x, between wheel axes) ==================== -->
+  <xacro:macro name="standoff" params="name angle_deg">
+    <xacro:cyl_part name="${name}"
+                    xyz="${standoff_pos_r*cos(radians(angle_deg))} ${standoff_pos_r*sin(radians(angle_deg))} ${standoff_z}"
+                    radius="${standoff_radius}" length="${standoff_len}" mass="0.06" material="silver"/>
+  </xacro:macro>
+  <xacro:standoff name="standoff_1" angle_deg="30"/>
+  <xacro:standoff name="standoff_2" angle_deg="150"/>
+  <xacro:standoff name="standoff_3" angle_deg="270"/>
+
+  <!-- ==================== MICROCONTROLLER ENCLOSURE (clear acrylic + ESP32) ==================== -->
+  <xacro:box_part name="enclosure" xyz="0 0 ${base_plate_t/2.0 + 0.025}"
+                  size_x="0.16" size_y="0.11" size_z="0.05" mass="0.3" material="acrylic"/>
+  <xacro:box_part name="esp32_carrier" xyz="0 0 ${base_plate_t/2.0 + 0.006}"
+                  size_x="0.12" size_y="0.07" size_z="0.004" mass="0.03" material="pcb_green"/>
+  <xacro:box_part name="esp32_module" xyz="0 0 ${base_plate_t/2.0 + 0.011}"
+                  size_x="0.052" size_y="0.028" size_z="0.006" mass="0.01" material="stepper_black"/>
+
+  <!-- ==================== WHEEL + DC GEAR MOTOR MACRO ==================== -->
+  <!-- Roller ring: recursive (xacro has no loops). Emits `n` roller visuals. -->
+  <xacro:macro name="roller_ring" params="i n dz phase">
+    <xacro:if value="${i &lt; n}">
+      <xacro:property name="phi" value="${phase + i*2*pi/n}"/>
+      <visual>
+        <origin xyz="${roller_ring_radius*cos(phi)} ${roller_ring_radius*sin(phi)} ${dz}"
+                rpy="${pi/2.0} 0 ${phi}"/>
+        <geometry>
+          <cylinder radius="${roller_radius}" length="${roller_length}"/>
+        </geometry>
+        <material name="roller_gray"/>
+      </visual>
+      <xacro:roller_ring i="${i+1}" n="${n}" dz="${dz}" phase="${phase}"/>
+    </xacro:if>
+  </xacro:macro>
+
+  <xacro:macro name="kiwi_wheel" params="name angle_deg">
+    <xacro:property name="angle_rad" value="${radians(angle_deg)}"/>
+    <!-- motor center sits inboard of the wheel, along the wheel's axle (radial) -->
+    <xacro:property name="motor_r" value="0.1475"/>
+
+    <!-- DC gear motor (motor can + gearbox + encoder cap). Local +z = radially outward. -->
+    <link name="${name}_hub">
+      <xacro:box_inertia m="0.25" x="0.05" y="0.05" z="0.105"/>
+      <visual>
+        <geometry><cylinder radius="0.025" length="0.075"/></geometry>
+        <material name="motor_gray"/>
+      </visual>
+      <visual>
+        <origin xyz="0 0 0.0525" rpy="0 0 0"/>
+        <geometry><box size="0.05 0.05 0.03"/></geometry>
+        <material name="silver"/>
+      </visual>
+      <visual>
+        <origin xyz="0 0 -0.0475" rpy="0 0 0"/>
+        <geometry><cylinder radius="0.02" length="0.02"/></geometry>
+        <material name="stepper_black"/>
+      </visual>
+    </link>
+    <joint name="${name}_hub_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="${name}_hub"/>
+      <origin xyz="${motor_r * cos(angle_rad)} ${motor_r * sin(angle_rad)} ${-axle_drop}"
+              rpy="${pi/2.0} 0 ${angle_rad + pi/2.0}"/>
+    </joint>
+
+    <!-- Omni wheel link: hub + two staggered rows of rollers (visual),
+         plain cylinder for collision/inertia (unchanged from before). -->
+    <link name="${name}_wheel">
+      <xacro:cylinder_inertia m="${wheel_mass}" r="${wheel_radius}" h="${wheel_width}"/>
+      <visual>
+        <geometry><cylinder radius="0.05" length="0.044"/></geometry>
+        <material name="silver"/>
+      </visual>
+      <xacro:roller_ring i="0" n="${rollers_per_row}" dz="${roller_row_dz}"  phase="0"/>
+      <xacro:roller_ring i="0" n="${rollers_per_row}" dz="${-roller_row_dz}" phase="${pi/rollers_per_row}"/>
+      <collision>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+    </link>
+    <joint name="${name}_wheel_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${name}_wheel"/>
+      <!-- Position stays at angle_rad (unchanged). The +pi/2 on yaw makes the
+           spin axis radial, so the rolling direction is tangential (needed
+           for turning and holonomic strafing). -->
+      <origin xyz="${wheel_offset * cos(angle_rad)} ${wheel_offset * sin(angle_rad)} ${-axle_drop}"
+              rpy="${pi/2.0} 0 ${angle_rad + pi/2.0}"/>
+      <axis xyz="0 0 1"/>
+      <dynamics damping="0.01" friction="0.005"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- Instantiate 3 wheels at 120 degree intervals (unchanged) -->
+  <xacro:kiwi_wheel name="front"      angle_deg="90"/>
+  <xacro:kiwi_wheel name="rear_left"  angle_deg="210"/>
+  <xacro:kiwi_wheel name="rear_right" angle_deg="-30"/>
+
+  <!-- ==================== LIDAR SENSOR (center of middle plate) ==================== -->
+  <link name="lidar_link">
+    <xacro:cylinder_inertia m="${lidar_mass}" r="${lidar_radius}" h="${lidar_height}"/>
+    <visual>
+      <geometry>
+        <cylinder radius="${lidar_radius}" length="${lidar_height}"/>
+      </geometry>
+      <material name="lidar_black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="${lidar_radius}" length="${lidar_height}"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <origin xyz="0 0 ${lidar_z}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Laser rangefinder module hanging under the top plate (visual only) -->
+  <xacro:box_part name="rangefinder_module"
+                  xyz="0 0 ${top_z - top_plate_t/2.0 - 0.02}"
+                  size_x="0.12" size_y="0.07" size_z="0.04" mass="0.1" material="dark_gray"/>
+
+  <!-- ==================== TRAY DRIVE: STEPPERS + BELTS ==================== -->
+  <!-- Stepper A1 (+y) and T1 (-y) at the rear of the top plate -->
+  <xacro:box_part name="stepper_a1" xyz="-0.12 0.10 ${top_surface_z + 0.0225}"
+                  size_x="0.05" size_y="0.05" size_z="0.045" mass="0.3" material="stepper_black"/>
+  <xacro:box_part name="stepper_t1" xyz="-0.12 -0.10 ${top_surface_z + 0.0225}"
+                  size_x="0.05" size_y="0.05" size_z="0.045" mass="0.3" material="stepper_black"/>
+
+  <!-- Drive pulleys on the stepper shafts -->
+  <xacro:cyl_part name="timing_pulley_a1" xyz="-0.12 0.10 ${top_surface_z + 0.045 + 0.007}"
+                  radius="0.012" length="0.014" mass="0.02" material="silver"/>
+  <xacro:cyl_part name="timing_pulley_t1" xyz="-0.12 -0.10 ${top_surface_z + 0.045 + 0.007}"
+                  radius="0.012" length="0.014" mass="0.02" material="silver"/>
+
+  <!-- Idler (tensioning) pulleys at the front on posts -->
+  <xacro:cyl_part name="idler_post_a1" xyz="0.15 0.10 ${top_surface_z + 0.026}"
+                  radius="0.004" length="0.052" mass="0.02" material="silver"/>
+  <xacro:cyl_part name="idler_post_t1" xyz="0.15 -0.10 ${top_surface_z + 0.026}"
+                  radius="0.004" length="0.052" mass="0.02" material="silver"/>
+  <xacro:cyl_part name="idler_pulley_a1" xyz="0.15 0.10 ${top_surface_z + 0.052 + 0.007}"
+                  radius="0.012" length="0.014" mass="0.02" material="silver"/>
+  <xacro:cyl_part name="idler_pulley_t1" xyz="0.15 -0.10 ${top_surface_z + 0.052 + 0.007}"
+                  radius="0.012" length="0.014" mass="0.02" material="silver"/>
+
+  <!-- Timing belt runs (visual only): 2 runs per side, wrapped around each pulley pair -->
+  <xacro:box_part name="belt_a1_outer" xyz="0.015 0.112 ${top_surface_z + 0.059}"
+                  size_x="0.27" size_y="0.003" size_z="0.010" mass="0.03" material="roller_gray"/>
+  <xacro:box_part name="belt_a1_inner" xyz="0.015 0.088 ${top_surface_z + 0.059}"
+                  size_x="0.27" size_y="0.003" size_z="0.010" mass="0.03" material="roller_gray"/>
+  <xacro:box_part name="belt_t1_outer" xyz="0.015 -0.112 ${top_surface_z + 0.059}"
+                  size_x="0.27" size_y="0.003" size_z="0.010" mass="0.03" material="roller_gray"/>
+  <xacro:box_part name="belt_t1_inner" xyz="0.015 -0.088 ${top_surface_z + 0.059}"
+                  size_x="0.27" size_y="0.003" size_z="0.010" mass="0.03" material="roller_gray"/>
+
+  <!-- ==================== LINEAR GUIDE RAIL ==================== -->
+  <xacro:box_part name="linear_guide_rail" xyz="0.02 0 ${top_surface_z + rail_h/2.0}"
+                  size_x="0.34" size_y="0.024" size_z="${rail_h}" mass="0.2" material="silver"/>
+
+  <!-- ==================== CARRIAGE / SLIDING TRAY (prismatic, +x = out the front flat) ==================== -->
+  <link name="tray_link">
+    <xacro:box_inertia m="0.5" x="0.20" y="0.16" z="0.03"/>
+    <!-- carriage block riding on the rail -->
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.07 0.05 0.012"/></geometry>
+      <material name="dark_gray"/>
+    </visual>
+    <!-- tray floor -->
+    <visual>
+      <origin xyz="0.02 0 0.009" rpy="0 0 0"/>
+      <geometry><box size="0.20 0.16 0.006"/></geometry>
+      <material name="plate_white"/>
+    </visual>
+    <collision>
+      <origin xyz="0.02 0 0.009" rpy="0 0 0"/>
+      <geometry><box size="0.20 0.16 0.006"/></geometry>
+    </collision>
+    <!-- front lip -->
+    <visual>
+      <origin xyz="0.117 0 0.027" rpy="0 0 0"/>
+      <geometry><box size="0.006 0.16 0.03"/></geometry>
+      <material name="plate_white"/>
+    </visual>
+    <collision>
+      <origin xyz="0.117 0 0.027" rpy="0 0 0"/>
+      <geometry><box size="0.006 0.16 0.03"/></geometry>
+    </collision>
+  </link>
+  <joint name="tray_joint" type="prismatic">
+    <parent link="base_link"/>
+    <child link="tray_link"/>
+    <origin xyz="0 0 ${top_surface_z + rail_h + 0.006}" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0.0" upper="${tray_travel}" effort="60" velocity="0.3"/>
+    <dynamics damping="5.0" friction="1.0"/>
+  </joint>
+
+  <!-- ==================== GAZEBO MATERIAL COLORS ==================== -->
+  <!-- (Legacy tags kept for existing links; new links take their color from
+       the URDF <material> definitions above.) -->
+  <gazebo reference="base_link">
+    <material>Gazebo/White</material>
+  </gazebo>
+  <gazebo reference="top_plate">
+    <material>Gazebo/White</material>
+  </gazebo>
+  <gazebo reference="front_hub">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+  <gazebo reference="rear_left_hub">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+  <gazebo reference="rear_right_hub">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+  <!-- All three wheels are actively driven (omni drive).
+       Uniform friction; simple cylinder collision can't model true omni-roller
+       anisotropic friction, so this is an approximation for sim/demo use. -->
+  <gazebo reference="front_wheel">
+    <material>Gazebo/Black</material>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+  </gazebo>
+  <gazebo reference="rear_left_wheel">
+    <material>Gazebo/Black</material>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+  </gazebo>
+  <gazebo reference="rear_right_wheel">
+    <material>Gazebo/Black</material>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+  </gazebo>
+  <gazebo reference="lidar_link">
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <!-- Tray: moderate friction so cargo doesn't slide off during acceleration -->
+  <gazebo reference="tray_link">
+    <mu1>0.8</mu1>
+    <mu2>0.8</mu2>
+  </gazebo>
+
+  <!-- ==================== GAZEBO PLUGINS ==================== -->
+  <gazebo>
+    <plugin filename="gz-sim-joint-state-publisher-system"
+            name="gz::sim::systems::JointStatePublisher">
+      <joint_name>front_wheel_joint</joint_name>
+      <joint_name>rear_left_wheel_joint</joint_name>
+      <joint_name>rear_right_wheel_joint</joint_name>
+      <joint_name>tray_joint</joint_name>
+    </plugin>
+  </gazebo>
+
+  <!-- Ground-truth odometry: independent of how the wheels are actuated,
+       so switching drive schemes never breaks odom/TF for SLAM. -->
+  <gazebo>
+    <plugin filename="gz-sim-odometry-publisher-system"
+            name="gz::sim::systems::OdometryPublisher">
+      <odom_frame>odom</odom_frame>
+      <robot_base_frame>base_footprint</robot_base_frame>
+      <odom_topic>model/kiwi_robot/odometry</odom_topic>
+      <odom_publish_frequency>20</odom_publish_frequency>
+      <tf_topic>tf</tf_topic>
+      <dimensions>2</dimensions>
+    </plugin>
+  </gazebo>
+
+  <!-- Per-wheel velocity controllers (unchanged).
+       Each wheel is commanded independently by omni_drive_node.py,
+       which converts cmd_vel (vx, vy, wz) into these 3 wheel speeds. -->
+  <gazebo>
+    <plugin filename="gz-sim-joint-controller-system"
+            name="gz::sim::systems::JointController">
+      <joint_name>front_wheel_joint</joint_name>
+      <topic>/model/kiwi_robot/joint/front_wheel_joint/cmd_vel</topic>
+      <use_force_commands>false</use_force_commands>
+      <p_gain>2.0</p_gain>
+    </plugin>
+  </gazebo>
+  <gazebo>
+    <plugin filename="gz-sim-joint-controller-system"
+            name="gz::sim::systems::JointController">
+      <joint_name>rear_left_wheel_joint</joint_name>
+      <topic>/model/kiwi_robot/joint/rear_left_wheel_joint/cmd_vel</topic>
+      <use_force_commands>false</use_force_commands>
+      <p_gain>2.0</p_gain>
+    </plugin>
+  </gazebo>
+  <gazebo>
+    <plugin filename="gz-sim-joint-controller-system"
+            name="gz::sim::systems::JointController">
+      <joint_name>rear_right_wheel_joint</joint_name>
+      <topic>/model/kiwi_robot/joint/rear_right_wheel_joint/cmd_vel</topic>
+      <use_force_commands>false</use_force_commands>
+      <p_gain>2.0</p_gain>
+    </plugin>
+  </gazebo>
+
+  <!-- Tray position controller: command a position in meters, 0.0 to 0.15
+       e.g. gz topic -t /model/kiwi_robot/joint/tray_joint/cmd_pos -m gz.msgs.Double -p 'data: 0.12' -->
+  <gazebo>
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>tray_joint</joint_name>
+      <topic>/model/kiwi_robot/joint/tray_joint/cmd_pos</topic>
+      <p_gain>400</p_gain>
+      <i_gain>0</i_gain>
+      <d_gain>40</d_gain>
+      <cmd_max>60</cmd_max>
+      <cmd_min>-60</cmd_min>
+    </plugin>
+  </gazebo>
+
+  <!-- Lidar sensor (unchanged) -->
+  <gazebo reference="lidar_link">
+    <sensor name="lidar" type="gpu_lidar">
+      <always_on>true</always_on>
+      <update_rate>10</update_rate>
+      <topic>scan</topic>
+      <gz_frame_id>lidar_link</gz_frame_id>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159</min_angle>
+            <max_angle>3.14159</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.12</min>
+          <max>10.0</max>
+          <resolution>0.01</resolution>
+        </range>
+      </lidar>
+    </sensor>
+  </gazebo>
+
+</robot>
