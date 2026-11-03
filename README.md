@@ -118,58 +118,8 @@ Gazebo is used for LiDAR-based SLAM and navigation,
 while MuJoCo is used to visualise the retractable
 tray mechanism.
 
-```mermaid
-flowchart TB
-    A["DarkViz Mobile Robot"]
-    A --> B["Hardware Architecture"]
-    A --> C["Simulation Architecture"]
+<img width="3176" height="1630" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/0c71947e-8315-4cbc-a7d0-86fdfdfdf7b2" />
 
-flowchart TB
-    A["DarkViz Mobile Robot"]
-
-    A --> B["Hardware Architecture"]
-    A --> C["Simulation Architecture"]
-
-    subgraph HW["Physical Hardware"]
-        B --> D["Processing Unit<br/>Raspberry Pi 4"]
-        B --> E["Microcontroller<br/>ESP32-WROOM-32"]
-
-        E --> F["Motor Drivers<br/>2 × TB6612FNG"]
-        F --> G["Three Geared DC Motors"]
-        G --> H["Three Omni-Wheels"]
-
-        I["Encoder Interfaces<br/>OE-28"] -.-> E
-        J["Inertial Sensor<br/>GY-521 / MPU-6050"] -.-> E
-        K["8000 mAh Battery"] --> E
-        K --> F
-    end
-
-    subgraph SIM["Simulation Environments"]
-        C --> L["Gazebo"]
-        C --> M["MuJoCo"]
-
-        subgraph GZ["Navigation Simulation"]
-            L --> N["Mobile Robot Model"]
-            N --> O["Simulated LiDAR"]
-            O --> P["ROS 2"]
-            P --> Q["SLAM Toolbox"]
-            Q --> R["Mapping and Localisation"]
-        end
-
-        subgraph MJ["Tray Mechanism Simulation"]
-            M --> S["Robot and Tray Model"]
-            S --> T["Joint Position Adjustment"]
-            T --> U["Tray Motion Visualisation"]
-        end
-    end
-
-    style A fill:#17365D,color:#fff,stroke:#17365D
-    style B fill:#DCE6F1,color:#172B4D,stroke:#4472C4
-    style C fill:#DCE6F1,color:#172B4D,stroke:#4472C4
-    style R fill:#D9EAD3,color:#274E13,stroke:#6AA84F
-    style U fill:#FCE5CD,color:#783F04,stroke:#E69138
-
-```
 ---
 
 ## Hardware Requirements
