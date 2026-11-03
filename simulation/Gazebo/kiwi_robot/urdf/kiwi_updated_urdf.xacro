@@ -1,23 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="kiwi_robot">
 
-  <!-- =====================================================================
-       KIWI ROBOT  -  sim model matched to the physical build
-
-       Layers (bottom -> top):
-         1. Hex base plate  : 3x DC gear motors + omni wheels, ESP32 in clear
-                              acrylic enclosure
-         2. Hex middle plate: "sensor layer" with the 360 deg LiDAR
-         3. Hex top plate   : 2x stepper (A1, T1), timing belts, linear guide
-                              rail, sliding tray (prismatic joint)
-         Plates are joined by 3 aluminum standoffs.
-
-       UNCHANGED vs. previous version (so omni_drive_node.py / SLAM still work):
-         wheel_radius, wheel_offset, wheel angles (90 / 210 / -30),
-         wheel joint names + axes, JointController topics, odometry plugin,
-         lidar_link frame, /scan topic.
-       ===================================================================== -->
-
   <!-- ==================== PROPERTIES ==================== -->
   <!-- Drive geometry (DO NOT CHANGE without updating omni_drive_node.py) -->
   <xacro:property name="wheel_radius" value="0.06"/>
