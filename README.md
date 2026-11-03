@@ -118,7 +118,7 @@ Gazebo is used for LiDAR-based SLAM and navigation,
 while MuJoCo is used to visualise the retractable
 tray mechanism.
 
-<img width="3176" height="1630" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/0c71947e-8315-4cbc-a7d0-86fdfdfdf7b2" />
+<img width="1408" height="768" alt="DarkViz System Architecture" src="images/darkviz_system_architecture.png" />
 
 ---
 
