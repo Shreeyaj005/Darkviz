@@ -112,14 +112,64 @@ The robot uses **LiDAR-based SLAM** to map the dark store and determine its posi
 
 ## System Architecture
 
-Add block diagram or system architecture image here.
+The DarkViz architecture comprises the physical
+robot hardware and two simulation environments.
+Gazebo is used for LiDAR-based SLAM and navigation,
+while MuJoCo is used to visualise the retractable
+tray mechanism.
 
-```markdown
-![System Architecture](images/system_architecture.png)
-````
+```mermaid
+flowchart TB
+    A["DarkViz Mobile Robot"]
+    A --> B["Hardware Architecture"]
+    A --> C["Simulation Architecture"]
 
-Briefly explain the architecture.
+flowchart TB
+    A["DarkViz Mobile Robot"]
 
+    A --> B["Hardware Architecture"]
+    A --> C["Simulation Architecture"]
+
+    subgraph HW["Physical Hardware"]
+        B --> D["Processing Unit<br/>Raspberry Pi 4"]
+        B --> E["Microcontroller<br/>ESP32-WROOM-32"]
+
+        E --> F["Motor Drivers<br/>2 × TB6612FNG"]
+        F --> G["Three Geared DC Motors"]
+        G --> H["Three Omni-Wheels"]
+
+        I["Encoder Interfaces<br/>OE-28"] -.-> E
+        J["Inertial Sensor<br/>GY-521 / MPU-6050"] -.-> E
+        K["8000 mAh Battery"] --> E
+        K --> F
+    end
+
+    subgraph SIM["Simulation Environments"]
+        C --> L["Gazebo"]
+        C --> M["MuJoCo"]
+
+        subgraph GZ["Navigation Simulation"]
+            L --> N["Mobile Robot Model"]
+            N --> O["Simulated LiDAR"]
+            O --> P["ROS 2"]
+            P --> Q["SLAM Toolbox"]
+            Q --> R["Mapping and Localisation"]
+        end
+
+        subgraph MJ["Tray Mechanism Simulation"]
+            M --> S["Robot and Tray Model"]
+            S --> T["Joint Position Adjustment"]
+            T --> U["Tray Motion Visualisation"]
+        end
+    end
+
+    style A fill:#17365D,color:#fff,stroke:#17365D
+    style B fill:#DCE6F1,color:#172B4D,stroke:#4472C4
+    style C fill:#DCE6F1,color:#172B4D,stroke:#4472C4
+    style R fill:#D9EAD3,color:#274E13,stroke:#6AA84F
+    style U fill:#FCE5CD,color:#783F04,stroke:#E69138
+
+```
 ---
 
 ## Hardware Requirements
@@ -192,18 +242,18 @@ Explain the step-by-step approach.
 
 ## Weekly Progress Updates
 
-Students must update this section every week.
+| Week | Date | Work Completed | Work Planned for Next Week | Issues / Challenges | GitHub Commit Link |
+|---|---|---|---|---|---|
+| Week 1 | 11-13 Aug 2026 | Set up the Gazebo warehouse environment and integrated the omni-wheel robot. Added initial CAD files and project documentation. | Implement SLAM and autonomous navigation. | Robot integration and simulation configuration. | [Commits](https://github.com/Shreeyaj005/Darkviz/commits/main/?since=2026-08-11&until=2026-08-13) |
+| Week 2 | 14-22 Aug 2026 | Integrated SLAM, omni-drive control and autonomous navigation. Added coordinate-based navigation, conveyor belt simulation and waypoint selection. | Improve navigation and robot control. | Localisation accuracy and navigation reliability. | [Commits](https://github.com/Shreeyaj005/Darkviz/commits/main/?since=2026-08-14&until=2026-08-22) |
+| Week 3 | 31 Aug-5 Sep 2026 | Added simulation documentation and migrated the ROS 2 setup to Humble. Updated project setup instructions. | Refine ROS 2 integration and robot control. | ROS 2 package and dependency compatibility. | [Commits](https://github.com/Shreeyaj005/Darkviz/commits/main/?since=2026-08-31&until=2026-09-05) |
+| Week 4 | 22-23 Sep 2026 | Implemented teleoperation and odometry nodes, fixed drifting and deadlock issues, and added Kiwi-drive control logic. Updated CAD and project documentation. | Refine robot control and document hardware connections. | Odometry accuracy and motion control debugging. | [Commits](https://github.com/Shreeyaj005/Darkviz/commits/main/?since=2026-09-22&until=2026-09-23) |
+| Week 5 | 8-23 Oct 2026 | Added motor wiring details, updated hardware documentation and incorporated project references. | Develop the electronics documentation and PCB design. | Hardware and software integration. | [Commits](https://github.com/Shreeyaj005/Darkviz/commits/main/?since=2026-10-08&until=2026-10-23) |
+| Week 6 | 24-28 Oct 2026 | Drafted the Kiwi-drive PCB and circuit schematic, documented motor and encoder connections, and updated the simulation model to match the physical robot. | Consolidate hardware and simulation integration and prepare for the project review. | Aligning the simulation model with the physical prototype. | [Commits](https://github.com/Shreeyaj005/Darkviz/commits/main/?since=2026-10-24&until=2026-10-28) |
+| Week 7 | 29 Oct-4 Nov 2026 | Consolidated project documentation, reviewed the simulation and hardware implementation, and prepared review materials. | Present project progress and incorporate review feedback. | Final documentation and integration checks. | [Repository](https://github.com/Shreeyaj005/Darkviz) |
+| Week 8 | 5 Nov 2026 | Presenting the project implementation, hardware progress and simulation results during the scheduled review. | Incorporate feedback and plan the next development phase. | Pending review feedback. | [Repository](https://github.com/Shreeyaj005/Darkviz) |
 
-| Week   | Date | Work Completed | Work Planned for Next Week | Issues / Challenges | GitHub Commit Link |
-| ------ | ---- | -------------- | -------------------------- | ------------------- | ------------------ |
-| Week 1 |      |                |                            |                     |                    |
-| Week 2 |      |                |                            |                     |                    |
-| Week 3 |      |                |                            |                     |                    |
-| Week 4 |      |                |                            |                     |                    |
-| Week 5 |      |                |                            |                     |                    |
-| Week 6 |      |                |                            |                     |                    |
-| Week 7 |      |                |                            |                     |                    |
-| Week 8 |      |                |                            |                     |                    |
+Upcoming Milestone: Project Progress Review – 5 November 2026.
 
 ---
 
@@ -261,12 +311,12 @@ Write details about connections, components, power supply, sensors, actuators, P
 
 DarkViz is implemented using **ROS 2 Humble** with Gazebo for simulation and RViz2 for visualization. The robot is modelled using **URDF/Xacro**, while Python and C++ ROS 2 nodes handle control, odometry, sensor processing, and navigation.
 
-* **SLAM Toolbox** — 2D mapping and localization using LiDAR and odometry
-* **Nav2** — autonomous path planning and obstacle avoidance
-* **ROS 2 Topics & TF** — communication and coordinate-frame management
-* **Gazebo** — dark-store environment and robot simulation
-* **RViz2** — visualization of maps, LiDAR, TF, and navigation
-* **Python/C++** — robot control and processing nodes
+* **SLAM Toolbox**: 2D mapping and localization using LiDAR and odometry
+* **Nav2**: autonomous path planning and obstacle avoidance
+* **ROS 2 Topics & TF**: communication and coordinate-frame management
+* **Gazebo**: dark-store environment and robot simulation
+* **RViz2**: visualization of maps, LiDAR, TF, and navigation
+* **Python/C++**: robot control and processing nodes
 
 The overall pipeline is:
 
@@ -358,6 +408,7 @@ The robot can be controlled using the available ROS 2 control/navigation nodes. 
 
 ### Expected Output
 The Gazebo simulation should start with the DarkViz omni-directional robot inside the simulated dark-store. The robot's LiDAR and odometry data should be available through ROS 2 topics, and SLAM should progressively generate a 2D map of the environment.
+
 ---
 
 ## Testing and Results
@@ -381,9 +432,9 @@ https://youtu.be/ZUh2bRQQ1O0
 
 ## Applications
 
-1. Dark-Store Order Fulfillment — Autonomous movement between storage shelves and order collection areas.
-2. Inventory Management — Automated navigation for inventory inspection, stock monitoring, and shelf-level data collection.
-3. Warehouse Automation — Autonomous transportation of goods between storage and packing areas.
+1. Dark-Store Order Fulfillment: Autonomous movement between storage shelves and order collection areas.
+2. Inventory Management: Automated navigation for inventory inspection, stock monitoring, and shelf-level data collection.
+3. Warehouse Automation: Autonomous transportation of goods between storage and packing areas.
 
 ---
 
@@ -414,7 +465,7 @@ https://youtu.be/ZUh2bRQQ1O0
 
 | Item                      | Details                                                   |
 | ------------------------- | --------------------------------------------------------- |
-| Paper Title               |                                                           |
+| Paper Title               | DarkViz: Design and Performance Evaluation of a Three-Wheeled Omni-Directional Mobile Robot for Autonomous Navigation in Space-Constrained Darkstores     |
 | Conference / Journal Name |                                                           |
 | Paper Status              |  Drafting                                                 |
 | Submission Date           |                                                           |
@@ -423,14 +474,28 @@ https://youtu.be/ZUh2bRQQ1O0
 ---
 
 ## References
-
-Add references in IEEE format.
-
-Example:
-
 ```text
-[1] A. Author, B. Author, "Title of the Paper," Journal/Conference Name, vol. X, no. Y, pp. xx-yy, Year.
-[2] Datasheet / https://benchrobotics.com/arduino/slide-omniwheel-robot-platform / Book reference.
+[1] L. Tagliavini, G. Colucci, A. Botta, P. Cavallone, L. Baglieri, and G. Quaglia, "Wheeled Mobile Robots: State of the Art Overview and Kinematic Comparison Among Three Omnidirectional Locomotion Strategies," Journal of Intelligent & Robotic Systems, vol. 106, Art. no. 57, 2022, doi: 10.1007/s10846-022-01745-7.
+
+[2] D. Martínez, E. Rubies, R. Bitriá, and J. Palacín, "Evaluation and Correction of Systematic Motion Errors in a Compact Three-Wheeled Omnidirectional Platform Based on Servomotors," Applied Sciences, vol. 15, no. 19, Art. no. 10700, 2025, doi: 10.3390/app151910700.
+
+[3] J. Moreno, E. Clotet, R. Lupiañez, M. Tresanchez, D. Martínez, T. Pallejà, J. Casanovas, and J. Palacín, "Design, Implementation and Validation of the Three-Wheel Holonomic Motion System of the Assistant Personal Robot (APR)," Sensors, vol. 16, no. 10, Art. no. 1658, 2016, doi: 10.3390/s16101658.
+
+[4] L. Li, L. Schulze, and K. Kalavadia, "Promising SLAM Methods for Automated Guided Vehicles and Autonomous Mobile Robots," Procedia Computer Science, vol. 232, pp. 2867–2874, 2024, doi: 10.1016/j.procs.2024.02.103.
+
+[5] R. Keith and H. M. La, "Review of Autonomous Mobile Robots for the Warehouse Environment," arXiv preprint arXiv:2406.08333, 2024. [Online]. Available: https://arxiv.org/abs/2406.08333.
+
+[6] G. Fragapane, R. de Koster, F. Sgarbossa, and J. O. Strandhagen, "Planning and Control of Autonomous Mobile Robots for Intralogistics: Literature Review and Research Agenda," European Journal of Operational Research, vol. 294, no. 2, pp. 405–426, 2021, doi: 10.1016/j.ejor.2021.01.019.
+
+[7] K. Azadeh, R. de Koster, and D. Roy, "Robotized and Automated Warehouse Systems: Review and Recent Developments," Transportation Science, vol. 53, no. 4, pp. 917–945, 2019, doi: 10.1287/trsc.2018.0873.
+
+[8] Í. R. da Costa Barros and T. P. Nascimento, "Robotic Mobile Fulfillment Systems: A Survey on Recent Developments and Research Opportunities," Robotics and Autonomous Systems, vol. 137, Art. no. 103729, 2021, doi: 10.1016/j.robot.2021.103729.
+
+[9] H. Taheri, B. Qiao, and N. Nurre, "Kinematic Model of a Three-Wheeled Omnidirectional Mobile Robot," The International Journal of Advanced Manufacturing Technology, vol. 78, pp. 1563–1571, 2015, doi: 10.1007/s00170-014-6761-3.
+
+[10] R. Rojas, "Kinematics of Omnidirectional Robots," Freie Universität Berlin, Technical Report, 2005.
+
+[11] R. Siegwart, I. R. Nourbakhsh, and D. Scaramuzza, Introduction to Autonomous Mobile Robots, 2nd ed. Cambridge, MA, USA: MIT Press, 2011.
 ```
 
 ---
