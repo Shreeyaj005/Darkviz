@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-"""Launch the Darkstore MuJoCo environment in the interactive viewer.
-
-Usage:
-    python3 launch_darkstore.py [path/to/scene.xml]
-
-If no path is given, defaults to darkstore_env.xml in this script's directory.
-"""
 import os
 import sys
 import time
