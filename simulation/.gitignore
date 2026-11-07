@@ -4,6 +4,16 @@ install/
 log/
 log/latest_build
 .drift/
-# Python
+
+# Python generated files
 __pycache__/
-*.py[cod]
+*.pyc
+*.pyo
+
+# IDE files
+.vscode/
+.idea/
+.cursor/
+
+# Temporary files
+*.tmp
