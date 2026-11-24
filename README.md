@@ -5,10 +5,7 @@
 [![Project Proposal Video](https://img.shields.io/badge/Project_Proposal-Video-red?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/RFOlutvGod4)
 [![Final Review Presentation](https://img.shields.io/badge/Final_Review-Presentation-blue?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](docs/final_review_defense_ppt.pdf)
 [![A3 Project Poster](https://img.shields.io/badge/Project_Poster-A3_PDF-green?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](docs/DarkViz_BE_Project_Poster.pdf)
-
-### Simulation Demo
 [![DarkViz Simulation Demo](https://img.shields.io/badge/Simulation-Order_Fulfilment-red?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/cydvwf7xo6w)
-### License
 [![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 ---
 
