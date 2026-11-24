@@ -409,7 +409,39 @@ https://youtu.be/ZUh2bRQQ1O0
 3. Multi-Robot Coordination: Extend the system to coordinate multiple robots for parallel order fulfillment and inventory operations.
 
 ---
+## Academic Reviews & Project Milestones
 
+### Final Year Project Review & External Defense — November 2026
+
+The final Bachelor of Engineering project evaluation was conducted at Vivekanand Education Society's Institute of Technology (VESIT), under the Department of Automation & Robotics.
+
+- **Evaluation:** External Project Review & Defense
+- **Date:** Saturday, 21 November 2026
+- **Venue:** Hashu Advani Memorial Complex, Collector Colony, Chembur, Mumbai, Maharashtra, India
+- **Department:** Automation & Robotics
+- **Project:** DarkViz: Autonomous Omni-Directional Mobile Robot for Dark-Store Inventory Handling
+
+**Supporting Deliverables**
+- [Final Review Presentation (PDF)](docs/final_review_defense_ppt.pdf)
+- [Project Poster (PDF)](docs/DarkViz_BE_Project_Poster.pdf)
+- [Simulation Demonstration](https://youtu.be/cydvwf7xo6w)
+- [Project Proposal Video](https://youtu.be/RFOlutvGod4)
+
+#### Final Review Defense — Geotagged Record
+
+<p align="center">
+  <img
+    src="images/Review/final_review.jpeg"
+    alt="DarkViz Final Year Project Review and Defense at VESIT"
+    width="85%"
+  />
+</p>
+
+<p align="center">
+  <em>Final project review and defense at VESIT, 21 November 2026.</em>
+</p>
+
+---
 ## Research Paper / Publication
 
 | Item                      | Details                                                   |
