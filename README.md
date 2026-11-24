@@ -2,6 +2,14 @@
 
 **Autonomous Omni-Directional Robotic System for Dark-Store Inventory Handling and Order Fulfillment**
 
+[![Project Proposal Video](https://img.shields.io/badge/Project_Proposal-Video-red?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/RFOlutvGod4)
+[![Final Review Presentation](https://img.shields.io/badge/Final_Review-Presentation-blue?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](docs/final_review_defense_ppt.pdf)
+[![A3 Project Poster](https://img.shields.io/badge/Project_Poster-A3_PDF-green?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](docs/DarkViz_BE_Project_Poster.pdf)
+
+### Simulation Demo
+[![DarkViz Simulation Demo](https://img.shields.io/badge/Simulation-Order_Fulfilment-red?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/cydvwf7xo6w)
+### License
+[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 ---
 
 ## Team Details
@@ -14,9 +22,6 @@
 | 4 | Vedant Chavan | 40 | Automation and Robotics | 2023.vedant.chavan@ves.ac.in |
 
 ---
-## Proposal 
-https://youtu.be/7PNNnmAVzm0?si=SbWJWXD1Y0URtpTx
-
 ## Guide Details
 
 **Project Guide: Amudha Senthilkumar**  
@@ -32,9 +37,6 @@ https://youtu.be/7PNNnmAVzm0?si=SbWJWXD1Y0URtpTx
 ---
 
 ## Abstract
-
-### Abstract
-
 Quick-commerce dark stores depend on rapid and accurate inventory retrieval to fulfill customer orders within short delivery times. Manual product picking can lead to delays, human errors, and increased operational effort. **DarkViz** is proposed as an autonomous robot to automate inventory retrieval and improve order preparation in dark stores.
 
 The robot uses an **omni-directional drive system** and **SLAM (Simultaneous Localization and Mapping)** for indoor mapping, localization, and autonomous navigation. It is equipped with a **tray-based retrieval mechanism** to collect products from designated storage locations and transport them to the order-fulfillment area. Product locations can be assigned through an existing inventory management system.
@@ -416,10 +418,10 @@ https://youtu.be/ZUh2bRQQ1O0
 | Item                      | Details                                                   |
 | ------------------------- | --------------------------------------------------------- |
 | Paper Title               | DarkViz: Design and Performance Evaluation of a Three-Wheeled Omni-Directional Mobile Robot for Autonomous Navigation in Space-Constrained Darkstores     |
-| Conference / Journal Name |                                                           |
-| Paper Status              |  Drafting                                                 |
-| Submission Date           |                                                           |
-| Paper Link                |                                                           |
+| Conference / Journal Name | To be decided                                                      |
+| Paper Status              |  Draft completed; target venue under consideration                                                |
+| Submission Date           |  Not yet submitted                        |
+| Paper Link                |  Manuscript in preparation                             |
 
 ---
 
